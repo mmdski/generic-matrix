@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <gmat_error.h>
 #include <gmatrix.h>
 
 struct _GMatrix {

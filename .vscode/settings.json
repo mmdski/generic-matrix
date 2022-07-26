@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.h": "c",
+    },
+    "C_Cpp.errorSquiggles": "Enabled",
+    "editor.tabSize": 2,
+    "cmake.generator": "Ninja",
+    "cmake.launchBehavior": "reuseTerminal"
+}

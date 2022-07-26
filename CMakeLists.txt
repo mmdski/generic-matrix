@@ -31,6 +31,6 @@ endmacro()
 
 add_subdirectory(app)
 
-# enable_testing()
-# include(CTest)
-# add_subdirectory(tests)
+enable_testing()
+include(CTest)
+add_subdirectory(tests)

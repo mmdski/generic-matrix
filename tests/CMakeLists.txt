@@ -75,4 +75,20 @@ macro(add_gmat_test basename)
   endif()
 endmacro()
 
+# will not compile with MSVC and current compile flags
+if(USING_ASAN AND NOT MSVC)
+  add_gmat_test(test_mem-access-after-free)
+  add_gmat_test(test_mem-double-free)
+
+  set_tests_properties(test_mem-access-after-free test_mem-double-free
+    PROPERTIES WILL_FAIL True)
+
+  add_gmat_test(test_mem-no-leak)
+
+  if(USING_LSAN)
+    add_gmat_test(test_mem-leak)
+    set_tests_properties(test_mem-leak PROPERTIES WILL_FAIL true)
+  endif()
+endif()
+
 add_gmat_test(test_new)

@@ -42,6 +42,15 @@ int gmat_new(GMatrix *m_ptr,
   return NO_ERROR;
 }
 
+int gmat_new_like(GMatrix *a_ptr, GMatrix b)
+{
+  int new_status = gmat_new(a_ptr, b->n_rows, b->n_cols, b->width, b->ops);
+  if (new_status)
+    return new_status;
+
+  return NO_ERROR;
+}
+
 int gmat_new_cpy(GMatrix *m_ptr,
                  size_t n_rows,
                  size_t n_cols,
@@ -77,11 +86,9 @@ int gmat_new_eye(GMatrix *m_ptr,
   void *one = malloc(width);
   void *zero = malloc(width);
 
-  op_status = ops->one(one);
-  CHECK_OP_STATUS
+  ops->one(one);
 
-  op_status = ops->zero(zero);
-  CHECK_OP_STATUS
+  ops->zero(zero);
 
   op_status = gmat_new(m_ptr, mat_size, mat_size, width, ops);
   CHECK_OP_STATUS
@@ -144,12 +151,7 @@ int gmat_print(GMatrix m)
         goto fail;
       }
 
-      op_status = m->ops->print(a);
-      if (op_status)
-      {
-        exit_status = op_status;
-        goto fail;
-      }
+      m->ops->print(a);
     }
     printf("\n");
   }
@@ -189,9 +191,7 @@ int gmat_add_scalar(GMatrix m, void *scalar_ptr, GMatrix *result_ptr)
   size_t width = m->width;
 
   int exit_status = NO_ERROR;
-  int add_status;
-  int set_status;
-  int get_status;
+  int op_status;
 
   bool free_res;
   if (*result_ptr)
@@ -212,24 +212,19 @@ int gmat_add_scalar(GMatrix m, void *scalar_ptr, GMatrix *result_ptr)
     for (size_t j = 1; j <= n_cols; j++)
     {
 
-      get_status = gmat_get(m, i, j, a);
-      if (get_status)
+      op_status = gmat_get(m, i, j, a);
+      if (op_status)
       {
-        exit_status = get_status;
+        exit_status = op_status;
         goto fail;
       }
 
-      add_status = m->ops->add(a, scalar_ptr, sum);
-      if (add_status)
-      {
-        exit_status = add_status;
-        goto fail;
-      }
+      m->ops->add(a, scalar_ptr, sum);
 
-      set_status = gmat_set(*result_ptr, i, j, sum);
-      if (set_status)
+      op_status = gmat_set(*result_ptr, i, j, sum);
+      if (op_status)
       {
-        exit_status = set_status;
+        exit_status = op_status;
         goto fail;
       }
     }
@@ -299,12 +294,7 @@ int gmat_mat_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr)
     for (size_t j = 1; j <= n_cols_b; j++)
     {
 
-      op_status = ops->zero(sum);
-      if (op_status)
-      {
-        exit_status = op_status;
-        goto fail;
-      }
+      ops->zero(sum);
 
       for (size_t k = 1; k <= n_cols_a; k++)
       {
@@ -323,19 +313,8 @@ int gmat_mat_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr)
           goto fail;
         }
 
-        op_status = ops->mult(a_ik, b_kj, prod);
-        if (op_status)
-        {
-          exit_status = op_status;
-          goto fail;
-        }
-
-        op_status = ops->add(sum, prod, sum);
-        if (op_status)
-        {
-          exit_status = op_status;
-          goto fail;
-        }
+        ops->mult(a_ik, b_kj, prod);
+        ops->add(sum, prod, sum);
       }
 
       op_status = gmat_set(mat_prod, i, j, sum);

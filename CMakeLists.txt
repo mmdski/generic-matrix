@@ -7,6 +7,11 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 if(MSVC)
   add_compile_options(/guard:cf /analyze /permissive- /W4 /WX)
 
+  # add debug flags for ASAN build
+  if("${CMAKE_BUILD_TYPE}" STREQUAL "Asan")
+    add_compile_options(/Zi)
+  endif()
+
   macro(link_math target)
   endmacro()
 

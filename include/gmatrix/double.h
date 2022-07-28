@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <gmatrix.h>
+#include <gmatrix/gmatrix.h>
 
 static void
 dbl_print(void *a_ptr) {

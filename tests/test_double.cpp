@@ -1,7 +1,6 @@
 extern "C" {
-#include <gmatrix.h>
-
-#include "double.h"
+#include <gmatrix/double.h>
+#include <gmatrix/gmatrix.h>
 }
 
 #include <gtest/gtest.h>

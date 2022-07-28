@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <gmatrix.h>
+#include <gmatrix/gmatrix.h>
 
 #define MAT_INDEX(n_cols, row, col) ((row - 1) * n_cols + (col - 1))
 

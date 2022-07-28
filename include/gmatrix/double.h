@@ -34,7 +34,7 @@ dbl_eq(void *a_ptr, void *b_ptr) {
   return *((double *) a_ptr) == *((double *) b_ptr);
 }
 
-static size_t dbl_width = sizeof(double);
+size_t dbl_width = sizeof(double);
 
 static ElementOperations dbl_ops = {
     dbl_zero, dbl_one, dbl_print, dbl_add, dbl_mult, dbl_eq};

@@ -111,6 +111,26 @@ TEST(DoubleMatrixTest, EqShape) {
   gmat_free(&c);
   gmat_free(&d);
 }
+
+TEST(DoubleMatrixTest, Shape) {
+  GMatrix m        = NULL;
+  size_t  n_rows   = 2;
+  size_t  n_cols   = 3;
+  double  values[] = {1, 2, 3, 4, 5, 6};
+
+  ASSERT_FALSE(gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
+
+  GMatrixShape *shape;
+  shape = (GMatrixShape *) malloc(sizeof(*shape));
+  ASSERT_FALSE(gmat_shape(m, shape));
+  ASSERT_EQ(n_rows, shape->n_rows);
+  ASSERT_EQ(n_cols, shape->n_cols);
+  ASSERT_EQ(dbl_width, shape->width);
+
+  gmat_free(&m);
+  free(shape);
+}
+
 } // namespace
 
 int

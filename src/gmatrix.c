@@ -107,6 +107,18 @@ gmat_free(GMatrix *m_ptr) {
 }
 
 int
+gmat_shape(GMatrix m, GMatrixShape *shape) {
+
+  assert(m && shape);
+
+  shape->n_rows = m->n_rows;
+  shape->n_cols = m->n_cols;
+  shape->width  = m->width;
+
+  return NO_ERROR;
+}
+
+int
 gmat_print(GMatrix m) {
   assert(m);
 
@@ -198,6 +210,32 @@ exit:
   free(b_ij);
 
   return eq;
+}
+
+int
+gmat_fill(GMatrix a, GMatrix b, size_t i, size_t j) {
+
+  assert(a && b);
+  assert(a->width == b->width);
+
+  size_t last_row = b->n_rows + i - 1;
+  size_t last_col = b->n_cols + j - 1;
+
+  assert(last_row > a->n_rows);
+  assert(last_col > a->n_cols);
+
+  void *tmp = malloc(a->width);
+
+  for (size_t l = j, n = 1; l <= last_col; l++, n++) {
+    for (size_t k = i, m = 1; k <= last_row; k++, m++) {
+      gmat_get(b, m, n, tmp);
+      gmat_set(a, k, l, tmp);
+    }
+  }
+
+  free(tmp);
+
+  return NO_ERROR;
 }
 
 int

@@ -32,6 +32,22 @@ TEST(DoubleMatrixTest, NewCpy) {
   ASSERT_FALSE(m);
 }
 
+TEST(DoubleMatrixTest, NewEye) {
+  GMatrix m        = NULL;
+  GMatrix eye      = NULL;
+  size_t  n_rows   = 2;
+  size_t  n_cols   = 2;
+  double  values[] = {1, 0, 0, 1};
+
+  ASSERT_FALSE(gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(gmat_new_eye(&eye, n_rows, dbl_width, &dbl_ops));
+
+  ASSERT_TRUE(gmat_eq(eye, m));
+
+  gmat_free(&m);
+  gmat_free(&eye);
+}
+
 TEST(DoubleMatrixTest, Eq) {
   GMatrix a         = NULL;
   GMatrix b         = NULL;

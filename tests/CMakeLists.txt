@@ -48,47 +48,35 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Asan" AND ASAN_AVAIL)
   message(STATUS "Using ASAN")
   add_compile_options(${ASAN_COMPILE_OPTION})
   add_link_options(${ASAN_LINK_OPTION})
+  set(ASAN_ENV "ASAN_OPTIONS=abort_on_error=0")
 
   if(LSAN_AVAIL)
     set(USING_LSAN True)
     message(STATUS "Using LSAN")
+
+    # detect leaks when using LSAN
+    string(CONCAT ASAN_ENV ${ASAN_ENV}
+      ":detect_leaks=1\;"
+      "LSAN_OPTIONS=suppressions=${CMAKE_CURRENT_SOURCE_DIR}/lsan.supp")
   endif()
 endif()
 
-macro(add_gmat_test basename)
-  add_gmat_exe(${basename} ${basename}.c)
+macro(add_gmat_test basename fail)
+  add_executable(${basename} ${basename}.cpp)
+  target_link_libraries(${basename} gmatrix GTest::gtest GTest::gtest_main)
+  gtest_add_tests(TARGET ${basename}
+    TEST_LIST ${basename}-tests)
 
   if(USING_ASAN)
-    add_test(NAME ${basename} COMMAND ${basename})
-
-    # detect leaks when using LSAN
-    if(USING_LSAN)
-      set_tests_properties(${basename} PROPERTIES ENVIRONMENT
-        "ASAN_OPTIONS=detect_leaks=1:abort_on_error=0;LSAN_OPTIONS=suppressions=${CMAKE_CURRENT_SOURCE_DIR}/lsan.supp")
-    else()
-      set_tests_properties(${basename} PROPERTIES ENVIRONMENT
-        "ASAN_OPTIONS=abort_on_error=0")
-    endif()
-
+    set_tests_properties(${${basename}-tests}
+      PROPERTIES
+      ENVIRONMENT ${ASAN_ENV}
+      WILL_FAIL ${fail})
   else()
-    add_test(NAME ${basename} COMMAND ${basename})
+    set_tests_properties(${${basename}-tests}
+      PROPERTIES
+      WILL_FAIL ${fail})
   endif()
 endmacro()
 
-# will not compile with MSVC and current compile flags
-if(USING_ASAN AND NOT MSVC)
-  add_gmat_test(test_mem-access-after-free)
-  add_gmat_test(test_mem-double-free)
-
-  set_tests_properties(test_mem-access-after-free test_mem-double-free
-    PROPERTIES WILL_FAIL True)
-
-  add_gmat_test(test_mem-no-leak)
-
-  if(USING_LSAN)
-    add_gmat_test(test_mem-leak)
-    set_tests_properties(test_mem-leak PROPERTIES WILL_FAIL true)
-  endif()
-endif()
-
-add_gmat_test(test_new)
+add_gmat_test(test_double FALSE)

@@ -1,7 +1,7 @@
 #ifndef __GMATRIX_H__
 #define __GMATRIX_H__
 
-#define MAT_INDEX(n_cols, row, col) ((row - 1) * n_cols + (col - 1))
+#include <stdlib.h>
 
 typedef enum { NO_ERROR = 0, MEMORY_ERROR } MatrixErrorType;
 

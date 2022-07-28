@@ -6,6 +6,8 @@
 
 #include <gmatrix.h>
 
+#define MAT_INDEX(n_cols, row, col) ((row - 1) * n_cols + (col - 1))
+
 struct _GMatrix {
   size_t             n_rows;
   size_t             n_cols;

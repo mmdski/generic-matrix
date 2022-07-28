@@ -26,12 +26,75 @@ TEST(DoubleMatrixTest, NewCpy) {
   size_t  n_cols   = 2;
   double  values[] = {1, 2, 3, 4};
 
-  ASSERT_FALSE(
-      gmat_new_cpy(&m, n_rows, n_cols, sizeof(double), &dbl_ops, values));
+  ASSERT_FALSE(gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
   ASSERT_TRUE(m);
 
   gmat_free(&m);
   ASSERT_FALSE(m);
+}
+
+TEST(DoubleMatrixTest, Eq) {
+  GMatrix a         = NULL;
+  GMatrix b         = NULL;
+  GMatrix c         = NULL;
+  size_t  n_rows    = 2;
+  size_t  n_cols    = 2;
+  double  values[]  = {1, 2, 3, 4};
+  double  values2[] = {1, 2};
+
+  ASSERT_FALSE(gmat_new_cpy(&a, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(gmat_new_cpy(&b, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(gmat_new_cpy(&c, n_rows, 1, dbl_width, &dbl_ops, values2));
+
+  /* equal matrices */
+  ASSERT_TRUE(gmat_eq(a, a));
+  ASSERT_TRUE(gmat_eq(a, b));
+  ASSERT_TRUE(gmat_eq(b, a));
+
+  /* compare to NULL */
+  ASSERT_FALSE(gmat_eq(NULL, NULL));
+  ASSERT_FALSE(gmat_eq(a, NULL));
+  ASSERT_FALSE(gmat_eq(NULL, b));
+
+  /* compare non-equal matrices */
+  ASSERT_FALSE(gmat_eq(a, c));
+
+  gmat_free(&a);
+  gmat_free(&b);
+  gmat_free(&c);
+}
+
+TEST(DoubleMatrixTest, EqShape) {
+  GMatrix a         = NULL;
+  GMatrix b         = NULL;
+  GMatrix c         = NULL;
+  GMatrix d         = NULL;
+  size_t  n_rows    = 2;
+  size_t  n_cols    = 2;
+  double  values[]  = {1, 2, 3, 4};
+  double  values2[] = {1, 2};
+  double  values3[] = {5, 6, 7, 8};
+
+  ASSERT_FALSE(gmat_new_cpy(&a, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(gmat_new_cpy(&b, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(gmat_new_cpy(&c, n_rows, 1, dbl_width, &dbl_ops, values2));
+  ASSERT_FALSE(gmat_new_cpy(&d, n_rows, n_cols, dbl_width, &dbl_ops, values3));
+
+  /* equal matrices */
+  ASSERT_TRUE(gmat_eq_shape(a, a));
+  ASSERT_TRUE(gmat_eq_shape(a, b));
+  ASSERT_TRUE(gmat_eq_shape(b, a));
+
+  /* equal shape */
+  ASSERT_TRUE(gmat_eq_shape(a, d));
+
+  /* compare non-equal matrices */
+  ASSERT_FALSE(gmat_eq_shape(a, c));
+
+  gmat_free(&a);
+  gmat_free(&b);
+  gmat_free(&c);
+  gmat_free(&d);
 }
 } // namespace
 

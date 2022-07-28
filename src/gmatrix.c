@@ -148,6 +148,58 @@ gmat_get(GMatrix m, size_t i, size_t j, void *value_ptr) {
   return NO_ERROR;
 }
 
+bool
+gmat_eq_shape(GMatrix a, GMatrix b) {
+  assert(a && b);
+
+  if (a->width != b->width)
+    return false;
+
+  if (a->n_rows != b->n_rows)
+    return false;
+
+  if (a->n_cols != b->n_cols)
+    return false;
+
+  return true;
+}
+
+bool
+gmat_eq(GMatrix a, GMatrix b) {
+
+  if (!(a && b))
+    return false;
+
+  if (!gmat_eq_shape(a, b))
+    return false;
+
+  size_t n_rows = a->n_rows;
+  size_t n_cols = a->n_cols;
+
+  void *a_ij = malloc(a->width);
+  void *b_ij = malloc(a->width);
+
+  bool eq = true;
+
+  for (size_t i = 1; i <= n_rows; i++) {
+    for (size_t j = 1; j <= n_cols; j++) {
+      gmat_get(a, i, j, a_ij);
+      gmat_get(b, i, j, b_ij);
+      if (!a->ops->eq(a_ij, b_ij)) {
+        eq = false;
+        goto exit;
+      }
+    }
+  }
+
+exit:
+
+  free(a_ij);
+  free(b_ij);
+
+  return eq;
+}
+
 int
 gmat_add_scalar(GMatrix m, void *scalar_ptr, GMatrix *result_ptr) {
   assert(m);

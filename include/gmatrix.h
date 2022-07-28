@@ -1,6 +1,7 @@
 #ifndef __GMATRIX_H__
 #define __GMATRIX_H__
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 typedef enum { NO_ERROR = 0, MEMORY_ERROR } MatrixErrorType;
@@ -11,6 +12,7 @@ typedef struct _ElementOperations {
   void (*const print)(void *a);
   void (*const add)(void *a, void *b, void *sum);
   void (*const mult)(void *a, void *b, void *prod);
+  bool (*const eq)(void *a, void *b);
 } ElementOperations;
 
 typedef struct _GMatrix *GMatrix;
@@ -41,6 +43,10 @@ extern int gmat_get(GMatrix m, size_t i, size_t j, void *value_ptr);
 /* generic matrix math */
 extern int gmat_add_scalar(GMatrix m, void *scalar_ptr, GMatrix *result_ptr);
 extern int gmat_mat_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr);
+
+/* equality */
+extern bool gmat_eq(GMatrix a, GMatrix b);
+extern bool gmat_eq_shape(GMatrix a, GMatrix b);
 
 /* misc functions */
 extern int gmat_print(GMatrix m);

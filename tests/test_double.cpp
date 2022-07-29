@@ -48,6 +48,31 @@ TEST(DoubleMatrixTest, NewEye) {
   gmat_free(&eye);
 }
 
+TEST(DoubleMatrixTest, ElementView) {
+  GMatrix m        = NULL;
+  size_t  n_rows   = 2;
+  size_t  n_cols   = 2;
+  double  values[] = {1, 2, 3, 4};
+
+  ASSERT_FALSE(gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
+
+  double *el_view;
+
+  el_view = (double *) gmat_element_view(m, 1, 1);
+  ASSERT_DOUBLE_EQ(*el_view, 1);
+
+  el_view = (double *) gmat_element_view(m, 1, 2);
+  ASSERT_DOUBLE_EQ(*el_view, 2);
+
+  el_view = (double *) gmat_element_view(m, 2, 1);
+  ASSERT_DOUBLE_EQ(*el_view, 3);
+
+  el_view = (double *) gmat_element_view(m, 2, 2);
+  ASSERT_DOUBLE_EQ(*el_view, 4);
+
+  gmat_free(&m);
+}
+
 TEST(DoubleMatrixTest, Eq) {
   GMatrix a         = NULL;
   GMatrix b         = NULL;

@@ -160,6 +160,15 @@ gmat_get(GMatrix m, size_t i, size_t j, void *value_ptr) {
   return NO_ERROR;
 }
 
+void *
+gmat_element_view(GMatrix m, size_t i, size_t j) {
+  assert(m);
+  assert(i >= 1 && i <= m->n_rows);
+  assert(j >= 1 && j <= m->n_cols);
+
+  return &m->values + MAT_INDEX(m->n_cols, i, j) * m->width;
+}
+
 bool
 gmat_eq_shape(GMatrix a, GMatrix b) {
   assert(a && b);
@@ -299,56 +308,6 @@ gmat_scalar_mult(GMatrix m, void *scalar_ptr, GMatrix *result_ptr) {
 }
 
 int
-gmat_matrix_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr) {
-
-  assert(a && b);
-
-  size_t n_rows_a   = a->n_rows;
-  size_t n_cols_a   = a->n_cols;
-  size_t n_cols_b   = b->n_cols;
-  size_t n_rows_res = n_rows_a;
-  size_t n_cols_res = n_cols_b;
-  size_t width      = a->width;
-
-  ElementOperations *ops = a->ops;
-
-  if (!(*mat_prod_ptr)) {
-    int new_status =
-        gmat_new(mat_prod_ptr, n_rows_res, n_cols_res, width, a->ops);
-    if (new_status)
-      return new_status;
-  }
-  GMatrix mat_prod = *mat_prod_ptr;
-
-  void *a_ik = malloc(width);
-  void *b_kj = malloc(width);
-  void *prod = malloc(width);
-  void *sum  = malloc(width);
-
-  for (size_t i = 1; i <= n_rows_a; i++) {
-    for (size_t j = 1; j <= n_cols_b; j++) {
-
-      ops->zero(sum);
-
-      for (size_t k = 1; k <= n_cols_a; k++) {
-        gmat_get(a, i, k, a_ik);
-        gmat_get(b, k, j, b_kj);
-        ops->mult(a_ik, b_kj, prod);
-        ops->add(sum, prod, sum);
-      }
-      gmat_set(mat_prod, i, j, sum);
-    }
-  }
-
-  free(a_ik);
-  free(b_kj);
-  free(prod);
-  free(sum);
-
-  return NO_ERROR;
-}
-
-int
 gmat_matrix_add(GMatrix a, GMatrix b, GMatrix *mat_sum_ptr) {
 
   assert(a && b);
@@ -448,12 +407,12 @@ gmat_row_add_row(GMatrix m, size_t i1, size_t i2, void *c) {
 
   void *tmp = malloc(m->width);
 
-  size_t n_cols               = m->n_cols;
-  void (*add)(void *, void *) = m->ops->add;
+  size_t n_cols                             = m->n_cols;
+  void (*const add)(void *, void *, void *) = m->ops->add;
 
   for (size_t j = 1; j <= n_cols; j++) {
     gmat_get(m, i1, j, tmp);
-    add(c, tmp);
+    add(c, tmp, tmp);
     gmat_set(m, i2, j, tmp);
   }
 
@@ -475,8 +434,7 @@ gmat_row_exchange(GMatrix m, size_t i1, size_t i2) {
   void *tmp1 = malloc(m->width);
   void *tmp2 = malloc(m->width);
 
-  size_t n_cols               = m->n_cols;
-  void (*add)(void *, void *) = m->ops->add;
+  size_t n_cols = m->n_cols;
 
   for (size_t j = 1; j <= n_cols; j++) {
     gmat_get(m, i1, j, tmp1);

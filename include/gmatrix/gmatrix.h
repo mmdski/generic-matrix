@@ -45,8 +45,9 @@ extern void gmat_free(GMatrix *m_ptr);
 extern int gmat_shape(GMatrix m, GMatrixShape *shape);
 
 /* generic matrix set/get */
-extern int gmat_set(GMatrix m, size_t i, size_t j, void *value_ptr);
-extern int gmat_get(GMatrix m, size_t i, size_t j, void *value_ptr);
+extern int   gmat_set(GMatrix m, size_t i, size_t j, void *value_ptr);
+extern int   gmat_get(GMatrix m, size_t i, size_t j, void *value_ptr);
+extern void *gmat_element_view(GMatrix m, size_t i, size_t j);
 
 extern int gmat_fill(GMatrix a, GMatrix b, size_t i, size_t j);
 

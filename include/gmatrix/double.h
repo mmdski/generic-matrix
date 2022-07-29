@@ -10,33 +10,33 @@ dbl_print(void *a_ptr) {
 }
 
 static void
-dbl_zero(void *a_ptr) {
-  *((double *) a_ptr) = 0;
+dbl_zero(void *lvalue) {
+  *((double *) lvalue) = 0;
 }
 
 static void
-dbl_one(void *a_ptr) {
-  *((double *) a_ptr) = 1;
+dbl_one(void *lvalue) {
+  *((double *) lvalue) = 1;
 }
 
 static void
-dbl_add(void *a_ptr, void *b_ptr, void *sum_ptr) {
-  *((double *) sum_ptr) = *((double *) a_ptr) + *((double *) b_ptr);
+dbl_add(void *lvalue, void *a_ptr, void *b_ptr) {
+  *((double *) lvalue) = *((double *) a_ptr) + *((double *) b_ptr);
 }
 
 static void
-dbl_mult(void *a_ptr, void *b_ptr, void *prod_ptr) {
-  *((double *) prod_ptr) = *((double *) a_ptr) * *((double *) b_ptr);
+dbl_mult(void *lvalue, void *a_ptr, void *b_ptr) {
+  *((double *) lvalue) = *((double *) a_ptr) * *((double *) b_ptr);
 }
 
 static bool
-dbl_eq(void *a_ptr, void *b_ptr) {
-  return *((double *) a_ptr) == *((double *) b_ptr);
+dbl_eq(void *lvalue, void *rvalue) {
+  return *((double *) lvalue) == *((double *) rvalue);
 }
 
 static void
-dbl_assign(void *a_ptr, void *b_ptr) {
-  *((double *) a_ptr) = *((double *) b_ptr);
+dbl_assign(void *lvalue, void *rvalue) {
+  *((double *) lvalue) = *((double *) rvalue);
 }
 
 size_t dbl_width = sizeof(double);

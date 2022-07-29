@@ -13,7 +13,7 @@ main(void) {
   size_t n_cols   = 2;
   double values[] = {1, 2, 3, 4};
 
-  gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values);
+  gmat_new_memcpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values);
 
   puts("m = ");
   gmat_print(m);

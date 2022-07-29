@@ -7,13 +7,13 @@
 typedef enum { NO_ERROR = 0, MEMORY_ERROR } MatrixErrorType;
 
 typedef struct _ElementOperations {
-  void (*const zero)(void *a);
-  void (*const one)(void *a);
+  void (*const zero)(void *lvalue);
+  void (*const one)(void *lvalue);
   void (*const print)(void *a);
-  void (*const add)(void *a, void *b, void *sum);
-  void (*const mult)(void *a, void *b, void *prod);
-  bool (*const eq)(void *a, void *b);
-  void (*const assign)(void *a, void *b);
+  void (*const add)(void *lvalue, void *a, void *b);
+  void (*const mult)(void *lvalue, void *a, void *b);
+  bool (*const eq)(void *lvalue, void *rvalue);
+  void (*const assign)(void *lvalue, void *rvalue);
 } ElementOperations;
 
 typedef struct _GMatrixShape {
@@ -30,13 +30,13 @@ extern int  gmat_new(GMatrix           *m_ptr,
                      size_t             n_cols,
                      size_t             width,
                      ElementOperations *ops);
-extern int  gmat_new_like(GMatrix *a_ptr, GMatrix b);
-extern int  gmat_new_cpy(GMatrix           *m_ptr,
-                         size_t             n_rows,
-                         size_t             n_cols,
-                         size_t             width,
-                         ElementOperations *ops,
-                         void              *values);
+extern int  gmat_new_like(GMatrix *new_m_ptr, GMatrix m);
+extern int  gmat_new_memcpy(GMatrix           *m_ptr,
+                            size_t             n_rows,
+                            size_t             n_cols,
+                            size_t             width,
+                            ElementOperations *ops,
+                            void              *values);
 int         gmat_new_eye(GMatrix           *m_ptr,
                          size_t             mat_size,
                          size_t             width,

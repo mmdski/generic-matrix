@@ -25,7 +25,8 @@ TEST(DoubleMatrixTest, NewCpy) {
   size_t  n_cols   = 2;
   double  values[] = {1, 2, 3, 4};
 
-  ASSERT_FALSE(gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
   ASSERT_TRUE(m);
 
   gmat_free(&m);
@@ -39,7 +40,8 @@ TEST(DoubleMatrixTest, NewEye) {
   size_t  n_cols   = 2;
   double  values[] = {1, 0, 0, 1};
 
-  ASSERT_FALSE(gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
   ASSERT_FALSE(gmat_new_eye(&eye, n_rows, dbl_width, &dbl_ops));
 
   ASSERT_TRUE(gmat_eq(eye, m));
@@ -54,7 +56,8 @@ TEST(DoubleMatrixTest, ElementView) {
   size_t  n_cols   = 2;
   double  values[] = {1, 2, 3, 4};
 
-  ASSERT_FALSE(gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
 
   double *el_view;
 
@@ -82,9 +85,11 @@ TEST(DoubleMatrixTest, Eq) {
   double  values[]  = {1, 2, 3, 4};
   double  values2[] = {1, 2};
 
-  ASSERT_FALSE(gmat_new_cpy(&a, n_rows, n_cols, dbl_width, &dbl_ops, values));
-  ASSERT_FALSE(gmat_new_cpy(&b, n_rows, n_cols, dbl_width, &dbl_ops, values));
-  ASSERT_FALSE(gmat_new_cpy(&c, n_rows, 1, dbl_width, &dbl_ops, values2));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&a, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&b, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(gmat_new_memcpy(&c, n_rows, 1, dbl_width, &dbl_ops, values2));
 
   /* equal matrices */
   ASSERT_TRUE(gmat_eq(a, a));
@@ -115,10 +120,13 @@ TEST(DoubleMatrixTest, EqShape) {
   double  values2[] = {1, 2};
   double  values3[] = {5, 6, 7, 8};
 
-  ASSERT_FALSE(gmat_new_cpy(&a, n_rows, n_cols, dbl_width, &dbl_ops, values));
-  ASSERT_FALSE(gmat_new_cpy(&b, n_rows, n_cols, dbl_width, &dbl_ops, values));
-  ASSERT_FALSE(gmat_new_cpy(&c, n_rows, 1, dbl_width, &dbl_ops, values2));
-  ASSERT_FALSE(gmat_new_cpy(&d, n_rows, n_cols, dbl_width, &dbl_ops, values3));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&a, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&b, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(gmat_new_memcpy(&c, n_rows, 1, dbl_width, &dbl_ops, values2));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&d, n_rows, n_cols, dbl_width, &dbl_ops, values3));
 
   /* equal matrices */
   ASSERT_TRUE(gmat_eq_shape(a, a));
@@ -143,7 +151,8 @@ TEST(DoubleMatrixTest, Shape) {
   size_t  n_cols   = 3;
   double  values[] = {1, 2, 3, 4, 5, 6};
 
-  ASSERT_FALSE(gmat_new_cpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
+  ASSERT_FALSE(
+      gmat_new_memcpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
 
   GMatrixShape *shape;
   shape = (GMatrixShape *) malloc(sizeof(*shape));

@@ -40,8 +40,8 @@ gmat_new(GMatrix           *m_ptr,
 }
 
 int
-gmat_new_like(GMatrix *a_ptr, GMatrix b) {
-  int new_status = gmat_new(a_ptr, b->n_rows, b->n_cols, b->width, b->ops);
+gmat_new_like(GMatrix *new_m_ptr, GMatrix b) {
+  int new_status = gmat_new(new_m_ptr, b->n_rows, b->n_cols, b->width, b->ops);
   if (new_status)
     return new_status;
 
@@ -49,12 +49,12 @@ gmat_new_like(GMatrix *a_ptr, GMatrix b) {
 }
 
 int
-gmat_new_cpy(GMatrix           *m_ptr,
-             size_t             n_rows,
-             size_t             n_cols,
-             size_t             width,
-             ElementOperations *ops,
-             void              *values) {
+gmat_new_memcpy(GMatrix           *m_ptr,
+                size_t             n_rows,
+                size_t             n_cols,
+                size_t             width,
+                ElementOperations *ops,
+                void              *values) {
 
   int new_status = gmat_new(m_ptr, n_rows, n_cols, width, ops);
   if (new_status)
@@ -164,6 +164,9 @@ bool
 gmat_eq_shape(GMatrix a, GMatrix b) {
   assert(a && b);
 
+  if (a == b)
+    return true;
+
   if (a->width != b->width)
     return false;
 
@@ -182,17 +185,17 @@ gmat_eq(GMatrix a, GMatrix b) {
   if (!(a && b))
     return false;
 
+  if (a == b)
+    return true;
+
   if (!gmat_eq_shape(a, b))
     return false;
-
-  size_t n_rows = a->n_rows;
-  size_t n_cols = a->n_cols;
 
   bool is_eq                       = true;
   bool (*const eq)(void *, void *) = a->ops->eq;
 
-  for (size_t i = 1; i <= n_rows; i++) {
-    for (size_t j = 1; j <= n_cols; j++) {
+  for (size_t i = 1; i <= a->n_rows; i++) {
+    for (size_t j = 1; j <= a->n_cols; j++) {
       if (!eq(gmat_element_view(a, i, j), gmat_element_view(b, i, j))) {
         is_eq = false;
         goto exit;
@@ -232,28 +235,26 @@ int
 gmat_scalar_add(GMatrix m, void *scalar_ptr, GMatrix *result_ptr) {
   assert(m && scalar_ptr);
 
-  size_t n_rows = m->n_rows;
-  size_t n_cols = m->n_cols;
-  size_t width  = m->width;
-
   if (!(*result_ptr)) {
-    int new_status = gmat_new(result_ptr, n_rows, n_cols, width, m->ops);
+    int new_status =
+        gmat_new(result_ptr, m->n_rows, m->n_cols, m->width, m->ops);
     if (new_status)
       return new_status;
   }
 
-  void *sum                                 = malloc(width);
+  void *sum                                 = malloc(m->width);
   void (*const add)(void *, void *, void *) = m->ops->add;
   void (*const assign)(void *, void *)      = m->ops->assign;
 
-  for (size_t i = 1; i <= n_rows; i++) {
-    for (size_t j = 1; j <= n_cols; j++) {
-      add(scalar_ptr, gmat_element_view(m, i, j), sum);
+  for (size_t i = 1; i <= m->n_rows; i++) {
+    for (size_t j = 1; j <= m->n_cols; j++) {
+      add(sum, scalar_ptr, gmat_element_view(m, i, j));
       assign(gmat_element_view(*result_ptr, i, j), sum);
     }
   }
 
   free(sum);
+
   return NO_ERROR;
 }
 
@@ -261,28 +262,25 @@ int
 gmat_scalar_mult(GMatrix m, void *scalar_ptr, GMatrix *result_ptr) {
   assert(m && scalar_ptr);
 
-  size_t n_rows = m->n_rows;
-  size_t n_cols = m->n_cols;
-  size_t width  = m->width;
-
   if (!(*result_ptr)) {
-    int new_status = gmat_new(result_ptr, n_rows, n_cols, width, m->ops);
+    int new_status = gmat_new_like(result_ptr, m);
     if (new_status)
       return new_status;
   }
 
-  void *prod                                 = malloc(width);
+  void *prod                                 = malloc(m->width);
   void (*const mult)(void *, void *, void *) = m->ops->mult;
   void (*const assign)(void *, void *)       = m->ops->assign;
 
-  for (size_t i = 1; i <= n_rows; i++) {
-    for (size_t j = 1; j <= n_cols; j++) {
-      mult(scalar_ptr, gmat_element_view(m, i, j), prod);
+  for (size_t i = 1; i <= m->n_rows; i++) {
+    for (size_t j = 1; j <= m->n_cols; j++) {
+      mult(prod, scalar_ptr, gmat_element_view(m, i, j));
       assign(gmat_element_view(*result_ptr, i, j), prod);
     }
   }
 
   free(prod);
+
   return NO_ERROR;
 }
 
@@ -293,23 +291,19 @@ gmat_matrix_add(GMatrix a, GMatrix b, GMatrix *mat_sum_ptr) {
   assert(a->n_rows == b->n_rows);
   assert(a->n_cols == b->n_cols);
 
-  size_t n_rows = a->n_rows;
-  size_t n_cols = a->n_cols;
-  size_t width  = a->width;
-
   if (!(*mat_sum_ptr)) {
-    int new_status = gmat_new(mat_sum_ptr, n_rows, n_cols, width, a->ops);
+    int new_status = gmat_new_like(mat_sum_ptr, a);
     if (new_status)
       return new_status;
   }
 
-  void *sum                                 = malloc(width);
+  void *sum                                 = malloc(a->width);
   void (*const add)(void *, void *, void *) = a->ops->add;
   void (*const assign)(void *, void *)      = a->ops->assign;
 
-  for (size_t i = 1; i <= n_rows; i++) {
-    for (size_t j = 1; j <= n_cols; j++) {
-      add(gmat_element_view(a, i, j), gmat_element_view(b, i, j), sum);
+  for (size_t i = 1; i <= a->n_rows; i++) {
+    for (size_t j = 1; j <= a->n_cols; j++) {
+      add(sum, gmat_element_view(a, i, j), gmat_element_view(b, i, j));
       assign(gmat_element_view(*mat_sum_ptr, i, j), sum);
     }
   }
@@ -325,32 +319,25 @@ gmat_matrix_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr) {
   assert(a && b);
   assert(a->n_cols == b->n_rows);
 
-  size_t n_rows_a   = a->n_rows;
-  size_t n_cols_a   = a->n_cols;
-  size_t n_cols_b   = b->n_cols;
-  size_t n_rows_res = n_rows_a;
-  size_t n_cols_res = n_cols_b;
-  size_t width      = a->width;
-
   if (!(*mat_prod_ptr)) {
     int new_status =
-        gmat_new(mat_prod_ptr, n_rows_res, n_cols_res, width, a->ops);
+        gmat_new(mat_prod_ptr, a->n_rows, b->n_cols, a->width, a->ops);
     if (new_status)
       return new_status;
   }
 
-  void *prod                                 = malloc(width);
-  void *sum                                  = malloc(width);
+  void *prod                                 = malloc(a->width);
+  void *sum                                  = malloc(a->width);
   void (*const zero)(void *)                 = a->ops->zero;
   void (*const mult)(void *, void *, void *) = a->ops->mult;
   void (*const add)(void *, void *, void *)  = a->ops->add;
   void (*const assign)(void *, void *)       = a->ops->assign;
 
-  for (size_t i = 1; i <= n_rows_a; i++) {
-    for (size_t j = 1; j <= n_cols_b; j++) {
+  for (size_t i = 1; i <= a->n_rows; i++) {
+    for (size_t j = 1; j <= b->n_cols; j++) {
       zero(sum);
-      for (size_t k = 1; k <= n_cols_a; k++) {
-        mult(gmat_element_view(a, i, k), gmat_element_view(b, k, j), prod);
+      for (size_t k = 1; k <= a->n_cols; k++) {
+        mult(prod, gmat_element_view(a, i, k), gmat_element_view(b, k, j));
         add(sum, prod, sum);
       }
       assign(gmat_element_view(*mat_prod_ptr, i, j), sum);
@@ -370,13 +357,11 @@ gmat_row_add_row(GMatrix m, size_t i1, size_t i2, void *c) {
   assert(1 <= i1 && i1 <= m->n_rows);
   assert(1 <= i2 && i2 <= m->n_rows);
 
-  size_t n_cols = m->n_cols;
-
   void *tmp                                 = malloc(m->width);
   void (*const add)(void *, void *, void *) = m->ops->add;
 
-  for (size_t j = 1; j <= n_cols; j++) {
-    add(c, gmat_element_view(m, i1, j), gmat_element_view(m, i2, j));
+  for (size_t j = 1; j <= m->n_cols; j++) {
+    add(gmat_element_view(m, i2, j), c, gmat_element_view(m, i1, j));
   }
 
   free(tmp);
@@ -394,15 +379,13 @@ gmat_row_exchange(GMatrix m, size_t i1, size_t i2) {
   if (i1 == i2)
     return NO_ERROR;
 
-  size_t n_cols = m->n_cols;
-
   void *tmp                            = malloc(m->width);
   void (*const assign)(void *, void *) = m->ops->assign;
 
-  for (size_t j = 1; j <= n_cols; j++) {
-    assign(tmp, gmat_element_view(m, i1, i2));
-    assign(gmat_element_view(m, i1, i2), gmat_element_view(m, i1, i1));
-    assign(gmat_element_view(m, i1, i1), tmp);
+  for (size_t j = 1; j <= m->n_cols; j++) {
+    assign(tmp, gmat_element_view(m, i1, j));
+    assign(gmat_element_view(m, i1, j), gmat_element_view(m, i1, j));
+    assign(gmat_element_view(m, i1, j), tmp);
   }
 
   free(tmp);

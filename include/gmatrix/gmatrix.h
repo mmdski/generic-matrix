@@ -13,6 +13,7 @@ typedef struct _ElementOperations {
   void (*const add)(void *a, void *b, void *sum);
   void (*const mult)(void *a, void *b, void *prod);
   bool (*const eq)(void *a, void *b);
+  void (*const assign)(void *a, void *b);
 } ElementOperations;
 
 typedef struct _GMatrixShape {

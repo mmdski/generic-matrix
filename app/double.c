@@ -20,7 +20,7 @@ main(void) {
 
   GMatrix res   = NULL;
   double  value = 10;
-  gmat_add_scalar(m, &value, &res);
+  gmat_scalar_add(m, &value, &res);
 
   puts("m + 10 = ");
   gmat_print(res);
@@ -31,7 +31,7 @@ main(void) {
   gmat_print(eye);
 
   GMatrix prod = NULL;
-  gmat_mat_mult(m, eye, &prod);
+  gmat_matrix_mult(m, eye, &prod);
   puts("I*m = ");
   gmat_print(prod);
 

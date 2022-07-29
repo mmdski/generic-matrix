@@ -51,8 +51,10 @@ extern int gmat_get(GMatrix m, size_t i, size_t j, void *value_ptr);
 extern int gmat_fill(GMatrix a, GMatrix b, size_t i, size_t j);
 
 /* generic matrix math */
-extern int gmat_add_scalar(GMatrix m, void *scalar_ptr, GMatrix *result_ptr);
-extern int gmat_mat_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr);
+extern int gmat_scalar_add(GMatrix m, void *scalar_ptr, GMatrix *result_ptr);
+extern int gmat_scalar_mult(GMatrix m, void *scalar_ptr, GMatrix *result_ptr);
+extern int gmat_matrix_add(GMatrix a, GMatrix b, GMatrix *mat_sum_ptr);
+extern int gmat_matrix_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr);
 
 /* equality */
 extern bool gmat_eq(GMatrix a, GMatrix b);

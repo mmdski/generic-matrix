@@ -239,9 +239,8 @@ gmat_fill(GMatrix a, GMatrix b, size_t i, size_t j) {
 }
 
 int
-gmat_add_scalar(GMatrix m, void *scalar_ptr, GMatrix *result_ptr) {
-  assert(m);
-  assert(scalar_ptr);
+gmat_scalar_add(GMatrix m, void *scalar_ptr, GMatrix *result_ptr) {
+  assert(m && scalar_ptr);
 
   size_t n_rows = m->n_rows;
   size_t n_cols = m->n_cols;
@@ -270,9 +269,130 @@ gmat_add_scalar(GMatrix m, void *scalar_ptr, GMatrix *result_ptr) {
 }
 
 int
-gmat_mat_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr) {
+gmat_scalar_mult(GMatrix m, void *scalar_ptr, GMatrix *result_ptr) {
+  assert(m && scalar_ptr);
+
+  size_t n_rows = m->n_rows;
+  size_t n_cols = m->n_cols;
+  size_t width  = m->width;
+
+  if (!(*result_ptr)) {
+    int new_status = gmat_new(result_ptr, n_rows, n_cols, width, m->ops);
+    if (new_status)
+      return new_status;
+  }
+
+  void *a    = malloc(width);
+  void *prod = malloc(width);
+
+  for (size_t i = 1; i <= n_rows; i++) {
+    for (size_t j = 1; j <= n_cols; j++) {
+      gmat_get(m, i, j, a);
+      m->ops->mult(a, scalar_ptr, prod);
+      gmat_set(*result_ptr, i, j, prod);
+    }
+  }
+
+  free(a);
+  free(prod);
+  return NO_ERROR;
+}
+
+int
+gmat_matrix_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr) {
 
   assert(a && b);
+
+  size_t n_rows_a   = a->n_rows;
+  size_t n_cols_a   = a->n_cols;
+  size_t n_cols_b   = b->n_cols;
+  size_t n_rows_res = n_rows_a;
+  size_t n_cols_res = n_cols_b;
+  size_t width      = a->width;
+
+  ElementOperations *ops = a->ops;
+
+  if (!(*mat_prod_ptr)) {
+    int new_status =
+        gmat_new(mat_prod_ptr, n_rows_res, n_cols_res, width, a->ops);
+    if (new_status)
+      return new_status;
+  }
+  GMatrix mat_prod = *mat_prod_ptr;
+
+  void *a_ik = malloc(width);
+  void *b_kj = malloc(width);
+  void *prod = malloc(width);
+  void *sum  = malloc(width);
+
+  for (size_t i = 1; i <= n_rows_a; i++) {
+    for (size_t j = 1; j <= n_cols_b; j++) {
+
+      ops->zero(sum);
+
+      for (size_t k = 1; k <= n_cols_a; k++) {
+        gmat_get(a, i, k, a_ik);
+        gmat_get(b, k, j, b_kj);
+        ops->mult(a_ik, b_kj, prod);
+        ops->add(sum, prod, sum);
+      }
+      gmat_set(mat_prod, i, j, sum);
+    }
+  }
+
+  free(a_ik);
+  free(b_kj);
+  free(prod);
+  free(sum);
+
+  return NO_ERROR;
+}
+
+int
+gmat_matrix_add(GMatrix a, GMatrix b, GMatrix *mat_sum_ptr) {
+
+  assert(a && b);
+  assert(a->n_rows == b->n_rows);
+  assert(a->n_cols == b->n_cols);
+
+  size_t n_rows = a->n_rows;
+  size_t n_cols = a->n_cols;
+  size_t width  = a->width;
+
+  ElementOperations *ops = a->ops;
+
+  if (!(*mat_sum_ptr)) {
+    int new_status = gmat_new(mat_sum_ptr, n_rows, n_cols, width, a->ops);
+    if (new_status)
+      return new_status;
+  }
+  GMatrix mat_sum = *mat_sum_ptr;
+
+  void *a_ij = malloc(width);
+  void *b_ij = malloc(width);
+  void *sum  = malloc(width);
+
+  for (size_t i = 1; i <= n_rows; i++) {
+    for (size_t j = 1; j <= n_cols; j++) {
+      gmat_get(a, i, j, a_ij);
+      gmat_get(a, i, j, b_ij);
+      ops->add(a_ij, b_ij, sum);
+      gmat_set(mat_sum, i, j, sum);
+    }
+  }
+
+  free(a_ij);
+  free(b_ij);
+  free(sum);
+
+  return NO_ERROR;
+}
+
+int
+gmat_matrix_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr) {
+
+  assert(a && b);
+  assert(a->n_cols == b->n_rows);
 
   size_t n_rows_a   = a->n_rows;
   size_t n_cols_a   = a->n_cols;

@@ -318,3 +318,56 @@ gmat_mat_mult(GMatrix a, GMatrix b, GMatrix *mat_prod_ptr) {
 
   return NO_ERROR;
 }
+
+int
+gmat_row_add_row(GMatrix m, size_t i1, size_t i2, void *c) {
+
+  assert(m && c);
+  assert(1 <= i1 && i1 <= m->n_rows);
+  assert(1 <= i2 && i2 <= m->n_rows);
+
+  void *tmp = malloc(m->width);
+
+  size_t n_cols               = m->n_cols;
+  void (*add)(void *, void *) = m->ops->add;
+
+  for (size_t j = 1; j <= n_cols; j++) {
+    gmat_get(m, i1, j, tmp);
+    add(c, tmp);
+    gmat_set(m, i2, j, tmp);
+  }
+
+  free(tmp);
+
+  return NO_ERROR;
+}
+
+int
+gmat_row_exchange(GMatrix m, size_t i1, size_t i2) {
+
+  assert(m);
+  assert(1 <= i1 && i1 <= m->n_rows);
+  assert(1 <= i2 && i2 <= m->n_rows);
+
+  if (i1 == i2)
+    return NO_ERROR;
+
+  void *tmp1 = malloc(m->width);
+  void *tmp2 = malloc(m->width);
+
+  size_t n_cols               = m->n_cols;
+  void (*add)(void *, void *) = m->ops->add;
+
+  for (size_t j = 1; j <= n_cols; j++) {
+    gmat_get(m, i1, j, tmp1);
+    gmat_get(m, i2, j, tmp2);
+
+    gmat_set(m, i1, j, tmp2);
+    gmat_set(m, i2, j, tmp1);
+  }
+
+  free(tmp1);
+  free(tmp2);
+
+  return NO_ERROR;
+}

@@ -61,4 +61,8 @@ extern bool gmat_eq_shape(GMatrix a, GMatrix b);
 /* misc functions */
 extern int gmat_print(GMatrix m);
 
+/* row operations */
+extern int gmat_row_add_row(GMatrix m, size_t i1, size_t i2, void *c);
+extern int gmat_row_exchange(GMatrix m, size_t i1, size_t i2);
+
 #endif

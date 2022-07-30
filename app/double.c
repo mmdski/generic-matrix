@@ -8,12 +8,7 @@ int
 main(void) {
 
   GMatrix m = NULL;
-
-  size_t n_rows   = 2;
-  size_t n_cols   = 2;
-  double values[] = {1, 2, 3, 4};
-
-  gmat_new_memcpy(&m, n_rows, n_cols, sizeof(double), &dbl_ops, values);
+  gmat_new_memcpy(&m, 2, 2, sizeof(double), &dbl_ops, (double[]){1, 2, 3, 4});
 
   puts("m = ");
   gmat_print(m);
@@ -26,7 +21,7 @@ main(void) {
   gmat_print(res);
 
   GMatrix eye = NULL;
-  gmat_new_eye(&eye, n_rows, sizeof(double), &dbl_ops);
+  gmat_new_eye(&eye, 2, sizeof(double), &dbl_ops);
   puts("I = ");
   gmat_print(eye);
 

@@ -226,14 +226,12 @@ gmat_fill(GMatrix a, GMatrix b, size_t i, size_t j) {
   size_t last_row = b->n_rows + i - 1;
   size_t last_col = b->n_cols + j - 1;
 
-  assert(last_row > a->n_rows);
-  assert(last_col > a->n_cols);
-
-  void (*const assign)(void *, void *) = a->ops->assign;
+  assert(last_row <= a->n_rows);
+  assert(last_col <= a->n_cols);
 
   for (size_t l = j, n = 1; l <= last_col; l++, n++) {
     for (size_t k = i, m = 1; k <= last_row; k++, m++) {
-      assign(gmat_element_view(a, k, l), gmat_element_view(b, m, n));
+      a->ops->assign(gmat_element_view(a, k, l), gmat_element_view(b, m, n));
     }
   }
 

@@ -184,6 +184,25 @@ TEST(DoubleMatrixTest, Shape) {
   gmat_free(&m);
 }
 
+TEST(DoubleMatrixTest, Fill) {
+
+  size_t n_rows = 3;
+  size_t n_cols = 3;
+
+  GMatrix ones = NULL;
+  ASSERT_FALSE(gmat_new_ones(&ones, n_rows, n_cols, dbl_width, &dbl_ops));
+
+  GMatrix filled = NULL;
+  ASSERT_FALSE(gmat_new(&filled, n_rows, n_cols, dbl_width, &dbl_ops));
+
+  ASSERT_FALSE(gmat_fill(filled, ones, 1, 1));
+
+  ASSERT_TRUE(gmat_eq(ones, filled));
+
+  gmat_free(&ones);
+  gmat_free(&filled);
+}
+
 } // namespace
 
 int

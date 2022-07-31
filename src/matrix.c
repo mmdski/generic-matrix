@@ -6,15 +6,7 @@
 
 #include <gmat/matrix.h>
 
-#define MAT_INDEX(n_cols, row, col) ((row - 1) * n_cols + (col - 1))
-
-struct GMatrix_ {
-  size_t             n_rows;
-  size_t             n_cols;
-  size_t             width;
-  ElementOperations *ops;
-  char               values[1];
-};
+#include "matrix.h"
 
 int
 gmat_new(GMatrix           *m_ptr,

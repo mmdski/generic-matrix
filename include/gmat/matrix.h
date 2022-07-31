@@ -48,6 +48,9 @@ extern int  gmat_new_ones(GMatrix           *m_ptr,
                           ElementOperations *ops);
 extern void gmat_free(GMatrix *m_ptr);
 
+/* concatenation */
+extern int gmat_col_cat(GMatrix *c_ptr, GMatrix a, GMatrix b);
+
 extern GMatrixShape gmat_shape(GMatrix m);
 
 /* generic matrix set/get */

@@ -399,3 +399,25 @@ gmat_row_exchange(GMatrix m, size_t i1, size_t i2) {
 
   return NO_ERROR;
 }
+
+int
+gmat_col_cat(GMatrix *c_ptr, GMatrix a, GMatrix b) {
+
+  assert(a && b);
+  assert(a->n_rows == b->n_rows);
+  assert(a->width == b->width);
+
+  size_t n_cols = a->n_cols + b->n_cols;
+
+  if (!(*c_ptr)) {
+    gmat_new(c_ptr, a->n_rows, n_cols, a->width, a->ops);
+  } else {
+    assert((*c_ptr)->n_rows != a->n_rows && (*c_ptr)->n_cols == n_cols &&
+           (*c_ptr)->width == a->width);
+  }
+
+  gmat_fill(*c_ptr, a, 1, 1);
+  gmat_fill(*c_ptr, b, 1, a->n_cols + 1);
+
+  return NO_ERROR;
+}

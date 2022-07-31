@@ -91,16 +91,15 @@ gmat_free(GMatrix *m_ptr) {
   }
 }
 
-int
-gmat_shape(GMatrix m, GMatrixShape *shape) {
+GMatrixShape
+gmat_shape(GMatrix m) {
 
-  assert(m && shape);
+  assert(m);
 
-  shape->n_rows = m->n_rows;
-  shape->n_cols = m->n_cols;
-  shape->width  = m->width;
+  GMatrixShape shape = {
+      .n_rows = m->n_rows, .n_cols = m->n_cols, .width = m->width};
 
-  return NO_ERROR;
+  return shape;
 }
 
 int

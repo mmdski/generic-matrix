@@ -43,7 +43,7 @@ int         gmat_new_eye(GMatrix           *m_ptr,
                          ElementOperations *ops);
 extern void gmat_free(GMatrix *m_ptr);
 
-extern int gmat_shape(GMatrix m, GMatrixShape *shape);
+extern GMatrixShape gmat_shape(GMatrix m);
 
 /* generic matrix set/get */
 extern int   gmat_set(GMatrix m, size_t i, size_t j, void *value_ptr);

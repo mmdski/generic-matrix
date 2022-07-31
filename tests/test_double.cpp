@@ -154,15 +154,12 @@ TEST(DoubleMatrixTest, Shape) {
   ASSERT_FALSE(
       gmat_new_memcpy(&m, n_rows, n_cols, dbl_width, &dbl_ops, values));
 
-  GMatrixShape *shape;
-  shape = (GMatrixShape *) malloc(sizeof(*shape));
-  ASSERT_FALSE(gmat_shape(m, shape));
-  ASSERT_EQ(n_rows, shape->n_rows);
-  ASSERT_EQ(n_cols, shape->n_cols);
-  ASSERT_EQ(dbl_width, shape->width);
+  GMatrixShape shape = gmat_shape(m);
+  ASSERT_EQ(n_rows, shape.n_rows);
+  ASSERT_EQ(n_cols, shape.n_cols);
+  ASSERT_EQ(dbl_width, shape.width);
 
   gmat_free(&m);
-  free(shape);
 }
 
 } // namespace

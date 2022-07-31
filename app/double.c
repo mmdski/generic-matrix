@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <gmatrix/double.h>
-#include <gmatrix/gmatrix.h>
+#include <gmat/double.h>
+#include <gmat/matrix.h>
 
 int
 main(void) {

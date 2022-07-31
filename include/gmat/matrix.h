@@ -1,12 +1,12 @@
-#ifndef __GMATRIX_H__
-#define __GMATRIX_H__
+#ifndef GMAT_MATRIX_H__
+#define GMAT_MATRIX_H__
 
 #include <stdbool.h>
 #include <stdlib.h>
 
 typedef enum { NO_ERROR = 0, MEMORY_ERROR } MatrixErrorType;
 
-typedef struct _ElementOperations {
+typedef struct ElementOperations_ {
   void (*const zero)(void *lvalue);
   void (*const one)(void *lvalue);
   void (*const print)(void *a);
@@ -16,13 +16,13 @@ typedef struct _ElementOperations {
   void (*const assign)(void *lvalue, void *rvalue);
 } ElementOperations;
 
-typedef struct _GMatrixShape {
+typedef struct GMatrixShape_ {
   size_t n_rows;
   size_t n_cols;
   size_t width;
 } GMatrixShape;
 
-typedef struct _GMatrix *GMatrix;
+typedef struct GMatrix_ *GMatrix;
 
 /* generic matrix creation */
 extern int  gmat_new(GMatrix           *m_ptr,

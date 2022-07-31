@@ -1,2 +1,2 @@
-add_library(gmatrix
-  gmatrix.c)
+add_library(gmat
+  matrix.c)

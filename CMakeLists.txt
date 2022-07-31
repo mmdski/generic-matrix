@@ -36,7 +36,7 @@ add_subdirectory(src)
 
 macro(add_gmat_exe basename)
   add_executable(${basename} ${basename}.c)
-  target_link_libraries(${basename} PRIVATE gmatrix)
+  target_link_libraries(${basename} PRIVATE gmat)
 endmacro()
 
 add_subdirectory(app)

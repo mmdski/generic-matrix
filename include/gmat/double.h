@@ -1,8 +1,11 @@
+#ifndef GMAT_DOUBLE_H_
+#define GMAT_DOUBLE_H_
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <gmatrix/gmatrix.h>
+#include <gmat/matrix.h>
 
 static void
 dbl_print(void *a_ptr) {
@@ -43,3 +46,5 @@ size_t dbl_width = sizeof(double);
 
 static ElementOperations dbl_ops = {
     dbl_zero, dbl_one, dbl_print, dbl_add, dbl_mult, dbl_eq, dbl_assign};
+
+#endif

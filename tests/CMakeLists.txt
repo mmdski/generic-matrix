@@ -63,7 +63,7 @@ endif()
 
 macro(add_gmat_test basename fail)
   add_executable(${basename} ${basename}.cpp)
-  target_link_libraries(${basename} gmatrix GTest::gtest GTest::gtest_main)
+  target_link_libraries(${basename} gmat GTest::gtest GTest::gtest_main)
   gtest_add_tests(TARGET ${basename}
     TEST_LIST ${basename}-tests)
 

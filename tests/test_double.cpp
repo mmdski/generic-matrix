@@ -50,6 +50,28 @@ TEST(DoubleMatrixTest, NewEye) {
   gmat_free(&eye);
 }
 
+TEST(DoubleMatrixTest, NewOnes) {
+  GMatrix a      = NULL;
+  GMatrix b      = NULL;
+  size_t  n_rows = 3;
+  size_t  n_cols = 3;
+
+  ASSERT_FALSE(gmat_new_ones(&a, n_rows, n_cols, dbl_width, &dbl_ops));
+  for (size_t i = 1; i <= n_rows; i++) {
+    for (size_t j = 1; j <= n_cols; j++) {
+      ASSERT_DOUBLE_EQ(1., *((double *) gmat_element_view(a, i, j)));
+    }
+  }
+
+  ASSERT_FALSE(gmat_new_ones(&b, n_rows, 1, dbl_width, &dbl_ops));
+  for (size_t i = 1; i <= n_rows; i++) {
+    ASSERT_DOUBLE_EQ(1., *((double *) gmat_element_view(a, i, 1)));
+  }
+
+  gmat_free(&a);
+  gmat_free(&b);
+}
+
 TEST(DoubleMatrixTest, ElementView) {
   GMatrix m        = NULL;
   size_t  n_rows   = 2;

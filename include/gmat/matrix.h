@@ -37,10 +37,15 @@ extern int  gmat_new_memcpy(GMatrix           *m_ptr,
                             size_t             width,
                             ElementOperations *ops,
                             void              *values);
-int         gmat_new_eye(GMatrix           *m_ptr,
+extern int  gmat_new_eye(GMatrix           *m_ptr,
                          size_t             mat_size,
                          size_t             width,
                          ElementOperations *ops);
+extern int  gmat_new_ones(GMatrix           *m_ptr,
+                          size_t             n_rows,
+                          size_t             n_cols,
+                          size_t             width,
+                          ElementOperations *ops);
 extern void gmat_free(GMatrix *m_ptr);
 
 extern GMatrixShape gmat_shape(GMatrix m);

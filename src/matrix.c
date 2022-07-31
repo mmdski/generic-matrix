@@ -83,6 +83,24 @@ gmat_new_eye(GMatrix           *m_ptr,
   return NO_ERROR;
 }
 
+int
+gmat_new_ones(
+    GMatrix *m_ptr, size_t m, size_t n, size_t width, ElementOperations *ops) {
+
+  assert(m > 0 && n > 0 && width > 0);
+  assert(ops);
+
+  int new_status = gmat_new(m_ptr, m, n, width, ops);
+  if (new_status)
+    return new_status;
+
+  for (size_t i = 1; i <= m; i++)
+    for (size_t j = 1; j <= n; j++)
+      ops->one(gmat_element_view(*m_ptr, i, j));
+
+  return NO_ERROR;
+}
+
 void
 gmat_free(GMatrix *m_ptr) {
   if (m_ptr && *m_ptr) {

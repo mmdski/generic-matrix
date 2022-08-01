@@ -5,5 +5,6 @@
 
 extern int gmat_gauss_reduce(GMatrix a);      // reduce using max exchange
 extern int gmat_gauss_reduce_zero(GMatrix a); // reduce using zero exchange
+extern int gmat_gauss_jordan(GMatrix a);      // gauss-jordan reduction
 
 #endif

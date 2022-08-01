@@ -81,6 +81,7 @@ extern int gmat_print(GMatrix m);
 /* row operations */
 extern int gmat_row_add_row(GMatrix m, size_t i1, size_t i2, void *c);
 extern int gmat_row_exchange(GMatrix m, size_t i1, size_t i2);
+extern int gmat_row_mult(GMatrix m, size_t i, void *c);
 
 /* pivot exchange */
 extern int gmat_pivot_exch_zero(GMatrix m, size_t pivot_row, size_t pivot_col);

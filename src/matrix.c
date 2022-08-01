@@ -435,6 +435,18 @@ gmat_pivot_exch_zero(GMatrix m, size_t pivot_row, size_t pivot_col) {
 }
 
 int
+gmat_row_mult(GMatrix m, size_t i, void *c) {
+
+  assert(m);
+  assert(1 <= i && i <= m->n_rows);
+
+  for (size_t j = 1; j <= m->n_cols; j++)
+    m->ops->mult(gmat_element_view(m, i, j), c, gmat_element_view(m, i, j));
+
+  return NO_ERROR;
+}
+
+int
 gmat_pivot_exch_max(GMatrix m, size_t pivot_row, size_t pivot_col) {
 
   assert(m);

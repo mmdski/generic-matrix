@@ -1,6 +1,7 @@
 #ifndef GMAT_DOUBLE_H_
 #define GMAT_DOUBLE_H_
 
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +24,11 @@ dbl_one(void *lvalue) {
 }
 
 static void
+dbl_abs(void *lvalue, void *rvalue) {
+  *((double *) lvalue) = fabs(*((double *) rvalue));
+}
+
+static void
 dbl_add(void *lvalue, void *a_ptr, void *b_ptr) {
   *((double *) lvalue) = *((double *) a_ptr) + *((double *) b_ptr);
 }
@@ -37,6 +43,16 @@ dbl_eq(void *lvalue, void *rvalue) {
   return *((double *) lvalue) == *((double *) rvalue);
 }
 
+static bool
+dbl_lt(void *lvalue, void *rvalue) {
+  return *((double *) lvalue) < *((double *) rvalue);
+}
+
+static bool
+dbl_gt(void *lvalue, void *rvalue) {
+  return *((double *) lvalue) > *((double *) rvalue);
+}
+
 static void
 dbl_assign(void *lvalue, void *rvalue) {
   *((double *) lvalue) = *((double *) rvalue);
@@ -44,7 +60,15 @@ dbl_assign(void *lvalue, void *rvalue) {
 
 size_t dbl_width = sizeof(double);
 
-static ElementOperations dbl_ops = {
-    dbl_zero, dbl_one, dbl_print, dbl_add, dbl_mult, dbl_eq, dbl_assign};
+static ElementOperations dbl_ops = {dbl_zero,
+                                    dbl_one,
+                                    dbl_print,
+                                    dbl_abs,
+                                    dbl_add,
+                                    dbl_mult,
+                                    dbl_eq,
+                                    dbl_lt,
+                                    dbl_gt,
+                                    dbl_assign};
 
 #endif

@@ -7,13 +7,16 @@
 typedef enum { NO_ERROR = 0, MEMORY_ERROR } MatrixErrorType;
 
 typedef struct ElementOperations_ {
-  void (*const zero)(void *lvalue);
-  void (*const one)(void *lvalue);
-  void (*const print)(void *a);
-  void (*const add)(void *lvalue, void *a, void *b);
-  void (*const mult)(void *lvalue, void *a, void *b);
-  bool (*const eq)(void *lvalue, void *rvalue);
-  void (*const assign)(void *lvalue, void *rvalue);
+  void (*const zero)(void *lvalue);                   // set lvalue to zero
+  void (*const one)(void *lvalue);                    // set lvalue to one
+  void (*const print)(void *a);                       // print value
+  void (*const abs)(void *lvalue, void *rvalue);      // absolute value
+  void (*const add)(void *lvalue, void *a, void *b);  // lvalue = a + b
+  void (*const mult)(void *lvalue, void *a, void *b); // lvalue = a * b
+  bool (*const eq)(void *lvalue, void *rvalue);       // is equal
+  bool (*const lt)(void *lvalue, void *rvalue);       // is less than
+  bool (*const gt)(void *lvalue, void *rvalue);       // is greater than
+  void (*const assign)(void *lvalue, void *rvalue);   // lvalue = rvalue
 } ElementOperations;
 
 typedef struct GMatrixShape_ {
@@ -76,5 +79,9 @@ extern int gmat_print(GMatrix m);
 /* row operations */
 extern int gmat_row_add_row(GMatrix m, size_t i1, size_t i2, void *c);
 extern int gmat_row_exchange(GMatrix m, size_t i1, size_t i2);
+
+/* pivot exchange */
+extern int gmat_pivot_exch_zero(GMatrix m, size_t pivot_row, size_t pivot_col);
+extern int gmat_pivot_exch_max(GMatrix m, size_t pivot_row, size_t pivot_col);
 
 #endif

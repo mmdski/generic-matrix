@@ -203,6 +203,29 @@ TEST(DoubleMatrixTest, Fill) {
   gmat_free(&filled);
 }
 
+TEST(DoubleMatrixTest, PivotExchMax) {
+
+  size_t n_rows = 3;
+  size_t n_cols = 3;
+
+  double  values[] = {1, 1, 1, 1, 2, 2, 1, 2, 3};
+  GMatrix a        = NULL;
+  ASSERT_FALSE(
+      gmat_new_memcpy(&a, n_rows, n_cols, dbl_width, &dbl_ops, values));
+
+  double  expected_values[] = {1, 2, 3, 1, 2, 2, 1, 1, 1};
+  GMatrix expected          = NULL;
+  ASSERT_FALSE(gmat_new_memcpy(
+      &expected, n_rows, n_cols, dbl_width, &dbl_ops, expected_values));
+
+  ASSERT_FALSE(gmat_pivot_exch_max(a, 1, 3));
+
+  ASSERT_TRUE(gmat_eq(expected, a));
+
+  gmat_free(&a);
+  gmat_free(&expected);
+}
+
 } // namespace
 
 int

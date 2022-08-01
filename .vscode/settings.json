@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.h": "c",
+        "chrono": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled",
     "editor.tabSize": 2,

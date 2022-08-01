@@ -7,15 +7,17 @@
 typedef enum { NO_ERROR = 0, MEMORY_ERROR } MatrixErrorType;
 
 typedef struct ElementOperations_ {
-  void (*const zero)(void *lvalue);                   // set lvalue to zero
-  void (*const one)(void *lvalue);                    // set lvalue to one
-  void (*const print)(void *a);                       // print value
-  void (*const abs)(void *lvalue, void *rvalue);      // absolute value
+  void (*const zero)(void *lvalue);                   // lvalue = 0
+  void (*const one)(void *lvalue);                    // lvalue = 1
+  void (*const print)(void *a);                       // print a
+  void (*const neg)(void *lvalue, void *rvalue);      // lvalue = -rvalue
+  void (*const abs)(void *lvalue, void *rvalue);      // lvalue = abs(rvalue)
   void (*const add)(void *lvalue, void *a, void *b);  // lvalue = a + b
   void (*const mult)(void *lvalue, void *a, void *b); // lvalue = a * b
-  bool (*const eq)(void *lvalue, void *rvalue);       // is equal
-  bool (*const lt)(void *lvalue, void *rvalue);       // is less than
-  bool (*const gt)(void *lvalue, void *rvalue);       // is greater than
+  void (*const div)(void *lvalue, void *a, void *b);  // lvalue = a / b
+  bool (*const eq)(void *lvalue, void *rvalue);       // lvalue == rvalue
+  bool (*const lt)(void *lvalue, void *rvalue);       // lvalue < rvalue
+  bool (*const gt)(void *lvalue, void *rvalue);       // lvalue > rvalue
   void (*const assign)(void *lvalue, void *rvalue);   // lvalue = rvalue
 } ElementOperations;
 

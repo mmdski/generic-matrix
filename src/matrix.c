@@ -374,7 +374,10 @@ gmat_row_add_row(GMatrix m, size_t i1, size_t i2, void *c) {
   void *tmp = malloc(m->width);
 
   for (size_t j = 1; j <= m->n_cols; j++) {
-    m->ops->add(gmat_element_view(m, i2, j), c, gmat_element_view(m, i1, j));
+
+    // m[i1, j] = m[i1, j] + c * m[i2, j]
+    m->ops->mult(tmp, c, gmat_element_view(m, i2, j)); // tmp = c * m[i2, j]
+    m->ops->add(gmat_element_view(m, i1, j), gmat_element_view(m, i1, j), tmp);
   }
 
   free(tmp);
@@ -422,7 +425,7 @@ gmat_pivot_exch_zero(GMatrix m, size_t pivot_row, size_t pivot_col) {
       break;
   }
 
-  if (i != pivot_row)
+  if (i != pivot_row && i <= m->n_rows)
     gmat_row_exchange(m, pivot_row, i);
 
   free(value);
@@ -452,7 +455,7 @@ gmat_pivot_exch_max(GMatrix m, size_t pivot_row, size_t pivot_col) {
     }
   }
 
-  if (i_max != pivot_row)
+  if (i_max != pivot_row && i_max <= m->n_rows)
     gmat_row_exchange(m, pivot_row, i_max);
 
   free(value);

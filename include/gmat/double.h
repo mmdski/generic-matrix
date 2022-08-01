@@ -24,6 +24,11 @@ dbl_one(void *lvalue) {
 }
 
 static void
+dbl_neg(void *lvalue, void *rvalue) {
+  *((double *) lvalue) = -1 * (*((double *) rvalue));
+}
+
+static void
 dbl_abs(void *lvalue, void *rvalue) {
   *((double *) lvalue) = fabs(*((double *) rvalue));
 }
@@ -36,6 +41,11 @@ dbl_add(void *lvalue, void *a_ptr, void *b_ptr) {
 static void
 dbl_mult(void *lvalue, void *a_ptr, void *b_ptr) {
   *((double *) lvalue) = *((double *) a_ptr) * *((double *) b_ptr);
+}
+
+static void
+dbl_div(void *lvalue, void *a_ptr, void *b_ptr) {
+  *((double *) lvalue) = *((double *) a_ptr) / *((double *) b_ptr);
 }
 
 static bool
@@ -63,9 +73,11 @@ size_t dbl_width = sizeof(double);
 static ElementOperations dbl_ops = {dbl_zero,
                                     dbl_one,
                                     dbl_print,
+                                    dbl_neg,
                                     dbl_abs,
                                     dbl_add,
                                     dbl_mult,
+                                    dbl_div,
                                     dbl_eq,
                                     dbl_lt,
                                     dbl_gt,

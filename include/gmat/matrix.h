@@ -13,6 +13,7 @@ typedef struct ElementOperations_ {
   void (*const neg)(void *lvalue, void *rvalue);      // lvalue = -rvalue
   void (*const abs)(void *lvalue, void *rvalue);      // lvalue = abs(rvalue)
   void (*const add)(void *lvalue, void *a, void *b);  // lvalue = a + b
+  void (*const sub)(void *lvalue, void *a, void *b);  // lvalue = a - b
   void (*const mult)(void *lvalue, void *a, void *b); // lvalue = a * b
   void (*const div)(void *lvalue, void *a, void *b);  // lvalue = a / b
   bool (*const eq)(void *lvalue, void *rvalue);       // lvalue == rvalue

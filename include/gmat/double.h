@@ -39,6 +39,11 @@ dbl_add(void *lvalue, void *a_ptr, void *b_ptr) {
 }
 
 static void
+dbl_sub(void *lvalue, void *a_ptr, void *b_ptr) {
+  *((double *) lvalue) = *((double *) a_ptr) - *((double *) b_ptr);
+}
+
+static void
 dbl_mult(void *lvalue, void *a_ptr, void *b_ptr) {
   *((double *) lvalue) = *((double *) a_ptr) * *((double *) b_ptr);
 }
@@ -76,6 +81,7 @@ static ElementOperations dbl_ops = {dbl_zero,
                                     dbl_neg,
                                     dbl_abs,
                                     dbl_add,
+                                    dbl_sub,
                                     dbl_mult,
                                     dbl_div,
                                     dbl_eq,

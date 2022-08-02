@@ -12,4 +12,7 @@ extern int gmat_gauss_solve(GMatrix  a,
                             GMatrix  b,
                             GMatrix *x_ptr); // gaussian solution
 
+// gaussian solution with no pivoting
+extern int gmat_gauss_solve_no_pivot(GMatrix a, GMatrix b, GMatrix *x_ptr);
+
 #endif

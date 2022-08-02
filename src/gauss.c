@@ -195,6 +195,31 @@ gmat_gauss_back_sub(GMatrix g_reduced, GMatrix *x_ptr) {
   return NO_ERROR;
 }
 
+static int
+no_pivot(GMatrix a, size_t i1, size_t i2) {
+  (void) a;
+  (void) i1;
+  (void) i2;
+  return NO_ERROR;
+}
+
+int
+gmat_gauss_solve_no_pivot(GMatrix a, GMatrix b, GMatrix *x_ptr) {
+
+  assert(a && b);
+
+  GMatrix aug = NULL;
+  gmat_col_cat(&aug, a, b);
+
+  gauss_reduce(aug, no_pivot);
+
+  gmat_gauss_back_sub(aug, x_ptr);
+
+  gmat_free(&aug);
+
+  return NO_ERROR;
+}
+
 int
 gmat_gauss_solve(GMatrix a, GMatrix b, GMatrix *x_ptr) {
 

@@ -2,7 +2,8 @@
     "files.associations": {
         "*.h": "c",
         "chrono": "c",
-        "ios": "c"
+        "ios": "c",
+        "ostream": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled",
     "C_Cpp.codeAnalysis.exclude": {

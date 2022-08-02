@@ -1,29 +1,30 @@
+#ifndef GMAT_MATRIX_HPP_
+#define GMAT_MATRIX_HPP_
+
 #include <assert.h>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
-
-#pragma once
 
 #define MAT_INDEX(n_cols, row, col) ((row - 1) * n_cols + (col - 1))
 
 namespace gmat {
 template <typename T> class Matrix {
 private:
-  size_t n_rows;
-  size_t n_cols;
-  T     *elem;
+  size_t n_rows_;
+  size_t n_cols_;
+  T     *elem_;
 
 public:
   /* constructors/destructor */
   Matrix() = delete; // cannot initialize without row and column sizes
-  Matrix(size_t m, size_t n) : n_rows{m}, n_cols{n}, elem{new T[m * n]} {
+  Matrix(size_t m, size_t n) : n_rows_{m}, n_cols_{n}, elem_{new T[m * n]} {
     assert(m > 0 && n > 0);
   }
   Matrix(size_t m, size_t n, T *values); // construct from array
   Matrix(const Matrix &other) noexcept;  // copy constructor
   Matrix(Matrix &&other) noexcept;       // move constructor
-  ~Matrix() { delete[] elem; }           // destructor
+  ~Matrix() { delete[] elem_; }          // destructor
 
   /* operator overloads */
   template <typename U>
@@ -32,9 +33,9 @@ public:
   // element access operator
   T &
   operator()(size_t i, size_t j) {
-    assert(1 <= i && i <= n_rows);
-    assert(1 <= j && j <= n_cols);
-    return elem[MAT_INDEX(n_cols, i, j)];
+    assert(1 <= i && i <= n_rows_);
+    assert(1 <= j && j <= n_cols_);
+    return elem_[MAT_INDEX(n_cols_, i, j)];
   }
 
   Matrix &operator=(const Matrix &other);  // copy assignment
@@ -52,59 +53,72 @@ public:
   // const function for getting an element
   T
   get(size_t i, size_t j) const {
-    return elem[MAT_INDEX(n_cols, i, j)];
+    return elem_[MAT_INDEX(n_cols_, i, j)];
   }
 
   size_t
   NRows() const {
-    return n_rows;
+    return n_rows_;
   }
 
   size_t
   NCols() const {
-    return n_cols;
+    return n_cols_;
   }
 
-  // add c*row 1 to row 2
-  void AddRow(size_t row1, size_t row2, T c);
+  void AddRow(size_t row1, size_t row2, T c);  // row1 = row1 + c * row2
+  void ExchangeRows(size_t row1, size_t row2); // swap rows 1 and 2
+  void RowMultiply(size_t row, T c);           // multiply row i by c
 
-  // swap rows 1 and 2
-  void SwapRows(size_t row1, size_t row2);
+  // no pivot row exchange (used for instruction)
+  void
+  NoPivotExchange(size_t pivot_row, size_t pivot_col) {
+    (void) pivot_row;
+    (void) pivot_col;
+  }
+
+  // zero pivot row exchange
+  void ZeroPivotExchange(size_t pivot_row, size_t pivot_col);
+
+  // exchange row for maximum pivot
+  void MaxPivotExchange(size_t pivot_row, size_t pivot_col);
 };
 
 // construct from an array
 template <typename T>
 Matrix<T>::Matrix(size_t m, size_t n, T *values)
-    : n_rows{m}, n_cols{n}, elem{new T[m * n]} {
+    : n_rows_{m}, n_cols_{n}, elem_{new T[m * n]} {
   assert(m > 0 && n > 0);
   for (size_t i = 0; i != m * n; i++)
-    elem[i] = values[i];
+    elem_[i] = values[i];
 }
 
 // copy constructor implementation
 template <typename T>
 Matrix<T>::Matrix(const Matrix &other) noexcept
-    : n_rows{other.n_rows}, n_cols{other.n_cols}, elem{new T[n_rows * n_cols]} {
-  for (size_t i = 0; i != n_rows * n_cols; ++i)
-    elem[i] = other.elem[i];
+    : n_rows_{other.n_rows_}, n_cols_{other.n_cols_},
+      elem_{new T[n_rows_ * n_cols_]} {
+  for (size_t i = 0; i != n_rows_ * n_cols_; ++i)
+    elem_[i] = other.elem_[i];
 }
 
 // move constructor implementation
 template <typename T>
 Matrix<T>::Matrix(Matrix &&other) noexcept
-    : n_rows{other.n_rows}, n_cols{other.n_cols}, elem{other.elem} {
-  other.elem   = nullptr;
-  other.n_rows = 0;
-  other.n_cols = 0;
+    : n_rows_{other.n_rows_}, n_cols_{other.n_cols_}, elem_{other.elem_} {
+  other.elem_   = nullptr;
+  other.n_rows_ = 0;
+  other.n_cols_ = 0;
 }
 
 // << operator
 template <typename T>
 std::ostream &
 operator<<(std::ostream &os, const Matrix<T> &m) {
-  for (size_t i = 1; i <= m.n_rows; ++i) {
-    for (size_t j = 1; j <= m.n_cols; ++j) {
-      os << std::setw(10) << m.elem[MAT_INDEX(m.n_cols, i, j)];
+  for (size_t i = 1; i <= m.n_rows_; ++i) {
+    for (size_t j = 1; j <= m.n_cols_; ++j) {
+      std::cout.precision(5);
+      os << std::setw(10) << m.elem_[MAT_INDEX(m.n_cols_, i, j)];
     }
     os << std::endl;
   }
@@ -121,12 +135,12 @@ Matrix<T>::operator==(const Matrix &other) {
     return true;
 
   // size check
-  if ((n_rows != other.n_rows) || (n_cols != other.n_cols))
+  if ((n_rows_ != other.n_rows_) || (n_cols_ != other.n_cols_))
     return false;
 
   // element equality check
-  for (size_t i = 0; i < n_rows * n_cols; i++) {
-    if (elem[i] != other.elem[i])
+  for (size_t i = 0; i < n_rows_ * n_cols_; i++) {
+    if (elem_[i] != other.elem_[i])
       return false;
   }
 
@@ -144,14 +158,14 @@ Matrix<T>::operator!=(const Matrix &other) {
 template <typename T>
 Matrix<T> &
 Matrix<T>::operator=(const Matrix<T> &other) {
-  size_t sz = other.n_rows * other.n_cols;
+  size_t sz = other.n_rows_ * other.n_cols_;
   T     *p  = new T[sz];
   for (size_t i = 0; i != sz; ++i)
-    p[i] = other.elem[i];
-  delete[] elem;
-  elem   = p;
-  n_rows = other.n_rows;
-  n_cols = other.n_cols;
+    p[i] = other.elem_[i];
+  delete[] elem_;
+  elem_   = p;
+  n_rows_ = other.n_rows_;
+  n_cols_ = other.n_cols_;
   return *this;
 }
 
@@ -161,15 +175,15 @@ Matrix<T> &
 Matrix<T>::operator=(Matrix<T> &&other) {
 
   if (this != &other) {
-    delete[] elem;
+    delete[] elem_;
 
-    elem   = other.elem;
-    n_rows = other.n_rows;
-    n_cols = other.n_cols;
+    elem_   = other.elem_;
+    n_rows_ = other.n_rows_;
+    n_cols_ = other.n_cols_;
 
-    other.n_rows = 0;
-    other.n_cols = 0;
-    other.elem   = nullptr;
+    other.n_rows_ = 0;
+    other.n_cols_ = 0;
+    other.elem_   = nullptr;
   }
 
   return *this;
@@ -179,9 +193,9 @@ Matrix<T>::operator=(Matrix<T> &&other) {
 template <typename T>
 Matrix<T>
 Matrix<T>::operator+(const T c) {
-  Matrix<T> sum(n_rows, n_cols);
-  for (size_t i = 0; i < n_rows * n_cols; ++i)
-    sum.elem[i] = c + elem[i];
+  Matrix<T> sum(n_rows_, n_cols_);
+  for (size_t i = 0; i < n_rows_ * n_cols_; ++i)
+    sum.elem_[i] = c + elem_[i];
   return sum;
 }
 
@@ -198,8 +212,8 @@ operator+(const T c, const Matrix<T> &m) {
 template <typename T>
 Matrix<T> &
 Matrix<T>::operator+=(const T c) {
-  for (size_t i = 0; i < n_rows * n_cols; ++i)
-    elem[i] = c + elem[i];
+  for (size_t i = 0; i < n_rows_ * n_cols_; ++i)
+    elem_[i] = c + elem_[i];
   return *this;
 }
 
@@ -207,9 +221,9 @@ Matrix<T>::operator+=(const T c) {
 template <typename T>
 Matrix<T>
 Matrix<T>::operator*(const T c) {
-  Matrix<T> prod(n_rows, n_cols);
-  for (size_t i = 0; i < n_rows * n_cols; ++i)
-    prod.elem[i] = c * elem[i];
+  Matrix<T> prod(n_rows_, n_cols_);
+  for (size_t i = 0; i < n_rows_ * n_cols_; ++i)
+    prod.elem_[i] = c * elem_[i];
   return prod;
 }
 
@@ -226,8 +240,8 @@ operator*(const T c, const Matrix<T> &m) {
 template <typename T>
 Matrix<T> &
 Matrix<T>::operator*=(const T c) {
-  for (size_t i = 0; i < n_rows * n_cols; ++i)
-    elem[i] = c * elem[i];
+  for (size_t i = 0; i < n_rows_ * n_cols_; ++i)
+    elem_[i] = c * elem_[i];
   return *this;
 }
 
@@ -235,19 +249,19 @@ Matrix<T>::operator*=(const T c) {
 template <typename T>
 Matrix<T>
 Matrix<T>::operator+(const Matrix &other) {
-  assert(n_rows == other.n_rows && n_cols == other.n_cols);
-  Matrix<T> sum(n_rows, n_cols);
-  for (size_t i = 0; i < n_rows * n_cols; ++i)
-    sum.elem[i] = elem[i] + other.elem[i];
+  assert(n_rows_ == other.n_rows_ && n_cols_ == other.n_cols_);
+  Matrix<T> sum(n_rows_, n_cols_);
+  for (size_t i = 0; i < n_rows_ * n_cols_; ++i)
+    sum.elem_[i] = elem_[i] + other.elem_[i];
   return sum;
 }
 
 template <typename T>
 Matrix<T> &
 Matrix<T>::operator+=(const Matrix &other) {
-  assert(n_rows == other.n_rows && n_cols == other.n_cols);
-  for (size_t i = 0; i < n_rows * n_cols; ++i)
-    elem[i] = elem[i] + other.elem[i];
+  assert(n_rows_ == other.n_rows_ && n_cols_ == other.n_cols_);
+  for (size_t i = 0; i < n_rows_ * n_cols_; ++i)
+    elem_[i] = elem_[i] + other.elem_[i];
   return *this;
 }
 
@@ -255,15 +269,15 @@ Matrix<T>::operator+=(const Matrix &other) {
 template <typename T>
 Matrix<T>
 Matrix<T>::operator*(const Matrix &other) {
-  assert(n_cols == other.n_rows);
-  Matrix<T> prod(n_rows, other.n_cols);
+  assert(n_cols_ == other.n_rows_);
+  Matrix<T> prod(n_rows_, other.n_cols_);
   T         sum;
-  for (size_t i = 1; i <= n_rows; i++) {
-    for (size_t j = 1; j <= other.n_cols; j++) {
+  for (size_t i = 1; i <= n_rows_; i++) {
+    for (size_t j = 1; j <= other.n_cols_; j++) {
       sum = 0;
-      for (size_t k = 1; k <= n_cols; k++) {
-        sum += elem[MAT_INDEX(n_cols, i, k)] *
-               other.elem[MAT_INDEX(other.n_cols, k, j)];
+      for (size_t k = 1; k <= n_cols_; k++) {
+        sum += elem_[MAT_INDEX(n_cols_, i, k)] *
+               other.elem_[MAT_INDEX(other.n_cols_, k, j)];
       }
       prod(i, j) = sum;
     }
@@ -276,30 +290,81 @@ Matrix<T>::operator*(const Matrix &other) {
 template <typename T>
 void
 Matrix<T>::AddRow(size_t row1, size_t row2, T c) {
-  assert(1 <= row1 && row1 <= n_rows);
-  assert(1 <= row2 && row2 <= n_rows);
-  for (size_t j = 1; j <= n_cols; j++)
-    (*this)(row2, j) += c * (*this)(row1, j);
+  assert(1 <= row1 && row1 <= n_rows_);
+  assert(1 <= row2 && row2 <= n_rows_);
+  for (size_t j = 1; j <= n_cols_; j++)
+    (*this)(row1, j) += c * (*this)(row2, j);
 }
 
 // swap rows 1 and 2
 template <typename T>
 void
-Matrix<T>::SwapRows(size_t row1, size_t row2) {
-  assert(1 <= row1 && row1 <= n_rows);
-  assert(1 <= row2 && row2 <= n_rows);
+Matrix<T>::ExchangeRows(size_t row1, size_t row2) {
+  assert(1 <= row1 && row1 <= n_rows_);
+  assert(1 <= row2 && row2 <= n_rows_);
+
+  if (row1 == row2)
+    return;
+
   T tmp;
-  for (size_t j = 1; j <= n_cols; j++) {
+  for (size_t j = 1; j <= n_cols_; j++) {
     tmp              = (*this)(row1, j);
     (*this)(row1, j) = (*this)(row2, j);
     (*this)(row2, j) = tmp;
   }
 }
 
+template <typename T>
+void
+Matrix<T>::RowMultiply(size_t row, T c) {
+  assert(1 <= row && row <= n_rows_);
+  for (size_t j = 1; j <= n_cols_; ++j)
+    elem_[MAT_INDEX(n_cols_, row, j)] *= c;
+}
+
+// zero pivot row exchange
+template <typename T>
+void
+Matrix<T>::ZeroPivotExchange(size_t pivot_row, size_t pivot_col) {
+  assert(1 <= pivot_row && pivot_row <= n_rows_);
+  assert(1 <= pivot_col && pivot_col <= n_cols_);
+
+  size_t i;
+  for (i = pivot_row; i <= n_rows_; ++i) {
+    if (elem_[MAT_INDEX(n_cols_, i, pivot_col)] != 0)
+      break;
+  }
+
+  if (i <= n_rows_)
+    (*this).ExchangeRows(i, pivot_row);
+}
+
+// exchange pivot row for maximum value in pivot_col
+template <typename T>
+void
+Matrix<T>::MaxPivotExchange(size_t pivot_row, size_t pivot_col) {
+  assert(1 <= pivot_row && pivot_row <= n_rows_);
+  assert(1 <= pivot_col && pivot_col <= n_cols_);
+
+  size_t max_row       = pivot_row;
+  T      abs_max_value = fabs(elem_[MAT_INDEX(n_cols_, pivot_row, pivot_col)]);
+  T      abs_value;
+  for (size_t i = pivot_row + 1; i <= n_rows_; ++i) {
+    abs_value = fabs(elem_[MAT_INDEX(n_cols_, i, pivot_col)]);
+    if (abs_value > abs_max_value) {
+      max_row       = i;
+      abs_max_value = abs_value;
+    }
+  }
+
+  if (max_row <= n_rows_)
+    (*this).ExchangeRows(max_row, pivot_row);
+}
+
 // create identity matrix
 template <typename T>
 Matrix<T>
-eye(size_t m) {
+Eye(size_t m) {
 
   Matrix<T> mat(m, m);
 
@@ -315,4 +380,54 @@ eye(size_t m) {
   return mat;
 }
 
+// create a matrix of ones
+template <typename T>
+Matrix<T>
+Ones(size_t m, size_t n) {
+
+  Matrix<T> mat(m, n);
+
+  for (size_t i = 1; i <= m; ++i)
+    for (size_t j = 1; j <= n; ++j)
+      mat(i, j) = 1;
+
+  return mat;
+}
+
+// create a matrix of ones
+template <typename T>
+Matrix<T>
+Zeros(size_t m, size_t n) {
+
+  Matrix<T> mat(m, n);
+
+  for (size_t i = 1; i <= m; ++i)
+    for (size_t j = 1; j <= n; ++j)
+      mat(i, j) = 0;
+
+  return mat;
+}
+
+// column concatenate
+template <typename T>
+Matrix<T>
+ColumnConcatenate(const Matrix<T> a, const Matrix<T> b) {
+
+  assert(a.NRows() == b.NRows());
+
+  size_t    total_columns = a.NCols() + b.NCols();
+  Matrix<T> c(a.NRows(), total_columns);
+
+  for (size_t i = 1; i <= a.NRows(); ++i) {
+    for (size_t j = 1; j <= a.NCols(); ++j)
+      c(i, j) = a.get(i, j);
+    for (size_t j = 1; j <= b.NCols(); ++j)
+      c(i, j + a.NCols()) = b.get(i, j);
+  }
+
+  return c;
+}
+
 } // namespace gmat
+
+#endif

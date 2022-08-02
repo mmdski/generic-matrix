@@ -91,7 +91,7 @@ gmat_gauss_jordan(GMatrix a) {
        pivot_col <= a->n_cols && pivot_row <= a->n_rows;
        pivot_col++) {
 
-    gmat_pivot_exch_max(a, pivot_row, pivot_col);
+    gmat_pivot_exch_zero(a, pivot_row, pivot_col);
 
     pivot_value = gmat_element_view(a, pivot_row, pivot_col);
     if (a->ops->eq(pivot_value, zero)) {

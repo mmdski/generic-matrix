@@ -409,32 +409,6 @@ gmat_row_exchange(GMatrix m, size_t i1, size_t i2) {
 }
 
 int
-gmat_pivot_exch_zero(GMatrix m, size_t pivot_row, size_t pivot_col) {
-
-  assert(m);
-  assert(pivot_row >= 1 && pivot_row <= m->n_rows);
-  assert(pivot_col >= 1 && pivot_col <= m->n_cols);
-
-  void *value = malloc(m->width);
-  void *zero  = malloc(m->width);
-  m->ops->zero(zero);
-
-  size_t i;
-  for (i = pivot_row; i <= m->n_rows; i++) {
-    if (m->ops->eq(gmat_element_view(m, i, pivot_col), zero))
-      break;
-  }
-
-  if (i != pivot_row && i <= m->n_rows)
-    gmat_row_exchange(m, pivot_row, i);
-
-  free(value);
-  free(zero);
-
-  return NO_ERROR;
-}
-
-int
 gmat_row_mult(GMatrix m, size_t i, void *c) {
 
   assert(m);
@@ -443,6 +417,31 @@ gmat_row_mult(GMatrix m, size_t i, void *c) {
   for (size_t j = 1; j <= m->n_cols; j++)
     m->ops->mult(gmat_element_view(m, i, j), c, gmat_element_view(m, i, j));
 
+  return NO_ERROR;
+}
+
+int
+gmat_pivot_exch_zero(GMatrix m, size_t pivot_row, size_t pivot_col) {
+
+  assert(m);
+  assert(pivot_row >= 1 && pivot_row <= m->n_rows);
+  assert(pivot_col >= 1 && pivot_col <= m->n_cols);
+
+  void *zero = malloc(m->width);
+  m->ops->zero(zero);
+
+  size_t i;
+
+  for (i = pivot_row; i <= m->n_rows; i++) {
+    if (m->ops->neq(gmat_element_view(m, i, pivot_col), zero)) {
+      break;
+    }
+  }
+
+  if (i != pivot_row && i <= m->n_rows)
+    gmat_row_exchange(m, pivot_row, i);
+
+  free(zero);
   return NO_ERROR;
 }
 

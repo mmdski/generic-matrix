@@ -96,6 +96,11 @@ flp_eq(void *lvalue, void *rvalue) {
 }
 
 static bool
+flp_neq(void *lvalue, void *rvalue) {
+  return ((flp *) lvalue)->value == ((flp *) rvalue)->value;
+}
+
+static bool
 flp_lt(void *lvalue, void *rvalue) {
   return ((flp *) lvalue)->value < ((flp *) rvalue)->value;
 }
@@ -122,6 +127,7 @@ static ElementOperations flp_ops = {flp_zero,
                                     flp_mult,
                                     flp_div,
                                     flp_eq,
+                                    flp_neq,
                                     flp_lt,
                                     flp_gt,
                                     flp_assign};

@@ -10,7 +10,7 @@
 
 static void
 dbl_print(void *a_ptr) {
-  printf("%10g", *((double *) a_ptr));
+  printf("%10.5g", *((double *) a_ptr));
 }
 
 static void
@@ -59,6 +59,11 @@ dbl_eq(void *lvalue, void *rvalue) {
 }
 
 static bool
+dbl_neq(void *lvalue, void *rvalue) {
+  return *((double *) lvalue) != *((double *) rvalue);
+}
+
+static bool
 dbl_lt(void *lvalue, void *rvalue) {
   return *((double *) lvalue) < *((double *) rvalue);
 }
@@ -85,6 +90,7 @@ static ElementOperations dbl_ops = {dbl_zero,
                                     dbl_mult,
                                     dbl_div,
                                     dbl_eq,
+                                    dbl_neq,
                                     dbl_lt,
                                     dbl_gt,
                                     dbl_assign};

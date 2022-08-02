@@ -17,6 +17,7 @@ typedef struct ElementOperations_ {
   void (*const mult)(void *lvalue, void *a, void *b); // lvalue = a * b
   void (*const div)(void *lvalue, void *a, void *b);  // lvalue = a / b
   bool (*const eq)(void *lvalue, void *rvalue);       // lvalue == rvalue
+  bool (*const neq)(void *lvalue, void *rvalue);      // lvalue != rvalue
   bool (*const lt)(void *lvalue, void *rvalue);       // lvalue < rvalue
   bool (*const gt)(void *lvalue, void *rvalue);       // lvalue > rvalue
   void (*const assign)(void *lvalue, void *rvalue);   // lvalue = rvalue

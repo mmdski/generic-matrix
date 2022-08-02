@@ -9,6 +9,9 @@
     "cmake.generator": "Ninja",
     "cmake.launchBehavior": "reuseTerminal",
     "cmake.revealLog": "never",
+    "cmake.configureSettings": {
+        "TESTS": 1
+    },
     "cSpell.words": [
         "GMATRIX"
     ]

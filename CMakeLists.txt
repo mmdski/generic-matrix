@@ -14,9 +14,6 @@ if(MSVC)
     add_compile_options(/Zi)
   endif()
 
-  macro(link_math target)
-  endmacro()
-
 else()
   add_compile_options(-Wall -Wextra -pedantic -Werror)
 
@@ -25,9 +22,6 @@ else()
     add_compile_options(-g3)
   endif()
 
-  macro(link_math target)
-    target_link_libraries(${target} m)
-  endmacro()
 endif()
 
 include_directories(include)
@@ -36,7 +30,11 @@ add_subdirectory(src)
 
 macro(add_gmat_exe basename)
   add_executable(${basename} ${basename}.c)
-  target_link_libraries(${basename} PRIVATE gmat)
+  if (MSVC)
+    target_link_libraries(${basename} PRIVATE gmat)
+  else()
+    target_link_libraries(${basename} PRIVATE m gmat)
+  endif()
 endmacro()
 
 add_subdirectory(app)

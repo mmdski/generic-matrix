@@ -31,7 +31,7 @@ main(void) {
   gmat_print(b);
 
   // "exact" solution
-  fl_precision = 3;
+  fl_precision = 16;
   gmat_gauss_solve(a, b, &x);
   puts("\nx: (\"exact\")");
   gmat_print(x);

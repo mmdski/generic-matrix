@@ -10,7 +10,7 @@
 
 static void
 dbl_print(void *a_ptr) {
-  printf("%10.5g", *((double *) a_ptr));
+  printf("%10g", *((double *) a_ptr));
 }
 
 static void

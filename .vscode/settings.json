@@ -5,6 +5,9 @@
         "ios": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled",
+    "C_Cpp.codeAnalysis.exclude": {
+        "build/_deps/googletest-*/": true
+    },
     "editor.tabSize": 2,
     "cmake.generator": "Ninja",
     "cmake.launchBehavior": "reuseTerminal",

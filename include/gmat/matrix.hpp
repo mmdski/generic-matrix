@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 #define MAT_INDEX(n_cols, row, col) ((row - 1) * n_cols + (col - 1))
 
@@ -21,10 +22,12 @@ public:
   Matrix(size_t m, size_t n) : n_rows_{m}, n_cols_{n}, elem_{new T[m * n]} {
     assert(m > 0 && n > 0);
   }
-  Matrix(size_t m, size_t n, double *values); // construct from array
-  Matrix(const Matrix &other) noexcept;       // copy constructor
-  Matrix(Matrix &&other) noexcept;            // move constructor
-  ~Matrix() { delete[] elem_; }               // destructor
+  Matrix(size_t              m,
+         size_t              n,
+         std::vector<double> values);   // construct from vector
+  Matrix(const Matrix &other) noexcept; // copy constructor
+  Matrix(Matrix &&other) noexcept;      // move constructor
+  ~Matrix() { delete[] elem_; }         // destructor
 
   /* operator overloads */
   template <typename U>
@@ -86,19 +89,24 @@ public:
 
 // construct from an array
 template <typename T>
-Matrix<T>::Matrix(size_t m, size_t n, double *values)
-    : n_rows_{m}, n_cols_{n}, elem_{new T[m * n]} {
-  assert(m > 0 && n > 0);
-  for (size_t i = 0; i != m * n; i++)
+Matrix<T>::Matrix(size_t m, size_t n, std::vector<double> values)
+    : n_rows_{m}, n_cols_{n} {
+  size_t size = n_rows_ * n_cols_;
+  assert(size > 0);
+  assert(values.size() == size);
+  elem_ = new T[size];
+  for (size_t i = 0; i < size; ++i)
     elem_[i] = values[i];
 }
 
 // copy constructor implementation
 template <typename T>
 Matrix<T>::Matrix(const Matrix &other) noexcept
-    : n_rows_{other.n_rows_}, n_cols_{other.n_cols_},
-      elem_{new T[n_rows_ * n_cols_]} {
-  for (size_t i = 0; i != n_rows_ * n_cols_; ++i)
+    : n_rows_{other.n_rows_}, n_cols_{other.n_cols_} {
+  size_t size = n_rows_ * n_cols_;
+  assert(size > 0);
+  elem_ = new T[size];
+  for (size_t i = 0; i < size; ++i)
     elem_[i] = other.elem_[i];
 }
 

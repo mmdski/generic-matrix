@@ -21,7 +21,6 @@ else()
   if("${CMAKE_BUILD_TYPE}" STREQUAL "Asan")
     add_compile_options(-g3)
   endif()
-
 endif()
 
 include_directories(include)
@@ -30,7 +29,8 @@ add_subdirectory(src)
 
 macro(add_gmat_exe basename)
   add_executable(${basename} ${basename}.c)
-  if (MSVC)
+
+  if(MSVC)
     target_link_libraries(${basename} PRIVATE gmat)
   else()
     target_link_libraries(${basename} PRIVATE m gmat)

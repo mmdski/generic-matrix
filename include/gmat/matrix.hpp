@@ -21,10 +21,10 @@ public:
   Matrix(size_t m, size_t n) : n_rows_{m}, n_cols_{n}, elem_{new T[m * n]} {
     assert(m > 0 && n > 0);
   }
-  Matrix(size_t m, size_t n, T *values); // construct from array
-  Matrix(const Matrix &other) noexcept;  // copy constructor
-  Matrix(Matrix &&other) noexcept;       // move constructor
-  ~Matrix() { delete[] elem_; }          // destructor
+  Matrix(size_t m, size_t n, double *values); // construct from array
+  Matrix(const Matrix &other) noexcept;       // copy constructor
+  Matrix(Matrix &&other) noexcept;            // move constructor
+  ~Matrix() { delete[] elem_; }               // destructor
 
   /* operator overloads */
   template <typename U>
@@ -86,7 +86,7 @@ public:
 
 // construct from an array
 template <typename T>
-Matrix<T>::Matrix(size_t m, size_t n, T *values)
+Matrix<T>::Matrix(size_t m, size_t n, double *values)
     : n_rows_{m}, n_cols_{n}, elem_{new T[m * n]} {
   assert(m > 0 && n > 0);
   for (size_t i = 0; i != m * n; i++)

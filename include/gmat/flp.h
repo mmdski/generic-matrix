@@ -1,17 +1,50 @@
-#ifndef GMAT_FLP_H_
-#define GMAT_FLP_H_
+#ifndef GMAT_FLP_HPP_
+#define GMAT_FLP_HPP_
 
-#include <math.h>
-#include <stdbool.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdbool>
+#include <iostream>
 #include <stdlib.h>
 
-#include <gmat/matrix.h>
+namespace gmat {
+class FlP {
 
-static unsigned int fl_precision = 16;
+private:
+  static FlP fl(double value);
 
-static double
-fl(double value) {
+  double value;
+
+public:
+  static unsigned int fl_precision;
+
+  FlP() : value{0} {};
+  FlP(double dbl) : value{dbl} {};
+
+  operator double() const { return value; }
+
+  bool operator==(const FlP &other); // equality
+  bool operator==(const int &other); // equality
+  bool operator!=(const FlP &other); // inequality
+  bool operator<(const FlP &other);  // less than
+  bool operator>(const FlP &other);  // greater than
+  FlP  operator+(const FlP &other);  // add
+  FlP &operator+=(const FlP &other); // add
+  FlP  operator-(const FlP &other);  // subtract
+  FlP &operator-=(const FlP &other); // subtract
+  FlP  operator*(const FlP &other);  // multiply
+  FlP  operator/(const FlP &other);  // divide
+
+  friend std::ostream &
+  operator<<(std::ostream &os, const FlP &flp) {
+    os << flp.value;
+    return os;
+  }
+};
+
+unsigned int FlP::fl_precision{16};
+
+FlP
+FlP::fl(double value) {
 
   int    exp10;
   double inf;
@@ -23,113 +56,76 @@ fl(double value) {
     exp10 = (int) ceil(log10(-value));
     inf   = -INFINITY;
   } else {
-    return value;
+    return FlP(value);
   }
 
   double sig10    = value / pow(10, exp10);
   double to_round = nextafter(sig10 * pow(10, fl_precision), inf);
   double rounded  = round(to_round);
   double fl       = pow(10, exp10) * rounded / pow(10, fl_precision);
-  return fl;
+  return FlP(fl);
 }
 
-typedef struct {
-  double value;
-} flp;
-
-static void
-flp_print(void *a_ptr) {
-  printf("%10g", ((flp *) a_ptr)->value);
+bool
+FlP::operator==(const FlP &flp) {
+  return value == flp.value;
 }
 
-static void
-flp_zero(void *lvalue) {
-  ((flp *) lvalue)->value = 0;
+bool
+FlP::operator==(const int &other) {
+  return value == other;
 }
 
-static void
-flp_one(void *lvalue) {
-  ((flp *) lvalue)->value = 1;
+bool
+FlP::operator!=(const FlP &flp) {
+  return value != flp.value;
 }
 
-static void
-flp_neg(void *lvalue, void *rvalue) {
-  ((flp *) lvalue)->value = -1 * ((flp *) rvalue)->value;
+bool
+FlP::operator<(const FlP &flp) {
+  return value < flp.value;
 }
 
-static void
-flp_abs(void *lvalue, void *rvalue) {
-  ((flp *) lvalue)->value = fabs(((flp *) rvalue)->value);
+bool
+FlP::operator>(const FlP &flp) {
+  return value > flp.value;
 }
 
-static void
-flp_add(void *lvalue, void *a_ptr, void *b_ptr) {
-  flp a                   = *((flp *) a_ptr);
-  flp b                   = *((flp *) b_ptr);
-  ((flp *) lvalue)->value = fl(a.value + b.value);
+FlP
+FlP::operator+(const FlP &other) {
+  FlP sum(fl(value + other.value));
+  return sum;
 }
 
-static void
-flp_sub(void *lvalue, void *a_ptr, void *b_ptr) {
-  flp a                   = *((flp *) a_ptr);
-  flp b                   = *((flp *) b_ptr);
-  ((flp *) lvalue)->value = fl(a.value - b.value);
+FlP &
+FlP::operator+=(const FlP &other) {
+  value = fl(value + other.value);
+  return *this;
 }
 
-static void
-flp_mult(void *lvalue, void *a_ptr, void *b_ptr) {
-  flp a                   = *((flp *) a_ptr);
-  flp b                   = *((flp *) b_ptr);
-  ((flp *) lvalue)->value = fl(a.value * b.value);
+FlP
+FlP::operator-(const FlP &other) {
+  FlP diff(fl(value - other.value));
+  return diff;
 }
 
-static void
-flp_div(void *lvalue, void *a_ptr, void *b_ptr) {
-  flp a                   = *((flp *) a_ptr);
-  flp b                   = *((flp *) b_ptr);
-  ((flp *) lvalue)->value = fl(a.value / b.value);
+FlP &
+FlP::operator-=(const FlP &other) {
+  value = fl(value - other.value);
+  return *this;
 }
 
-static bool
-flp_eq(void *lvalue, void *rvalue) {
-  return ((flp *) lvalue)->value == ((flp *) rvalue)->value;
+FlP
+FlP::operator*(const FlP &other) {
+  FlP prod(fl(value * other.value));
+  return prod;
 }
 
-static bool
-flp_neq(void *lvalue, void *rvalue) {
-  return ((flp *) lvalue)->value == ((flp *) rvalue)->value;
+FlP
+FlP::operator/(const FlP &other) {
+  FlP quot(fl(value / other.value));
+  return quot;
 }
 
-static bool
-flp_lt(void *lvalue, void *rvalue) {
-  return ((flp *) lvalue)->value < ((flp *) rvalue)->value;
-}
-
-static bool
-flp_gt(void *lvalue, void *rvalue) {
-  return ((flp *) lvalue)->value > ((flp *) rvalue)->value;
-}
-
-static void
-flp_assign(void *lvalue, void *rvalue) {
-  ((flp *) lvalue)->value = ((flp *) rvalue)->value;
-}
-
-size_t flp_width = sizeof(flp);
-
-static ElementOperations flp_ops = {flp_zero,
-                                    flp_one,
-                                    flp_print,
-                                    flp_neg,
-                                    flp_abs,
-                                    flp_add,
-                                    flp_sub,
-                                    flp_mult,
-                                    flp_div,
-                                    flp_eq,
-                                    flp_neq,
-                                    flp_lt,
-                                    flp_gt,
-                                    flp_assign};
-
+} // namespace gmat
 #endif

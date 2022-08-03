@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include <gmat/matrix.hpp>
+#include <gmat/matrix.h>
 
 using namespace std;
 using namespace gmat;

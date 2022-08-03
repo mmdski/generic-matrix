@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include <gmat/gauss.hpp>
-#include <gmat/matrix.hpp>
+#include <gmat/gauss.h>
+#include <gmat/matrix.h>
 
 using namespace std;
 using namespace gmat;

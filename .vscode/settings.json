@@ -1,8 +1,6 @@
 {
     "files.associations": {
-        "*.h": "c",
-        "chrono": "c",
-        "ios": "c",
+        "*.h": "cpp",
         "ostream": "cpp",
         "__bit_reference": "cpp",
         "__bits": "cpp",

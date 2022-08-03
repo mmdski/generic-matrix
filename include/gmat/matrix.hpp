@@ -155,11 +155,40 @@ Matrix<T>::operator==(const Matrix &other) {
   return true;
 }
 
+// equality
+template <typename T>
+bool
+operator==(const Matrix<T> &a, const Matrix<T> &b) {
+
+  // self check
+  if (&a == &b)
+    return true;
+
+  // size check
+  if ((a.NRows() != b.NRows()) || (a.NCols() != b.NCols()))
+    return false;
+
+  // element equality check
+  for (size_t i = 1; i <= a.NRows(); ++i) {
+    for (size_t j = 1; j <= a.NCols(); ++j)
+      if (a.get(i, j) != b.get(i, j))
+        return false;
+  }
+
+  return true;
+}
+
 // inequality
 template <typename T>
 bool
 Matrix<T>::operator!=(const Matrix &other) {
   return !((*this) == other);
+}
+
+template <typename T>
+bool
+operator!=(const Matrix<T> &a, const Matrix<T> &b) {
+  return !(a == b);
 }
 
 // copy assignment implementation

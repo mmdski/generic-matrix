@@ -13,3 +13,17 @@ buildType:
       short: Asan
       long: Instrument with Address Sanitizer
       buildType: Asan
+
+buildTests:
+  default: 'no'
+  choices:
+    'no':
+      short: No tests
+      long: Do not build and run tests
+      settings:
+        TESTS: 0
+    'yes':
+      short: Build tests
+      long: Build and run tests
+      settings:
+        TESTS: 1

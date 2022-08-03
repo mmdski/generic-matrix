@@ -2,7 +2,7 @@
 #define GMAT_MATRIX_HPP_
 
 #include <assert.h>
-#include <cstdlib>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <vector>

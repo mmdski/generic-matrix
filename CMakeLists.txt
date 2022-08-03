@@ -5,37 +5,30 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if(MSVC)
   add_compile_options(/guard:cf /analyze /permissive- /W4 /WX)
 
-  # add debug flags for ASAN build
+  # add debug and ASAN flags for ASAN build
+  # https://docs.microsoft.com/en-us/cpp/sanitizers/asan
   if("${CMAKE_BUILD_TYPE}" STREQUAL "Asan")
-    add_compile_options(/Zi)
+    add_compile_options(/Zi /fsanitize=address)
   endif()
 
 else()
   add_compile_options(-Wall -Wextra -pedantic -Werror)
 
-  # add debug flags for ASAN build
+  # add debug and ASAN flags for ASAN build
   if("${CMAKE_BUILD_TYPE}" STREQUAL "Asan")
-    add_compile_options(-g3)
+    add_compile_options(-g -fsanitize=address)
+    add_link_options(-fsanitize=address)
   endif()
 endif()
 
 include_directories(include)
 
-# add_subdirectory(src)
-macro(add_gmat_exe basename)
-  add_executable(${basename} ${basename}.c)
-
-  if(MSVC)
-    target_link_libraries(${basename} PRIVATE gmat)
-  else()
-    target_link_libraries(${basename} PRIVATE m gmat)
-  endif()
-endmacro()
-
+# build the files in the app subdirectory
 add_subdirectory(app)
 
 if(TESTS)

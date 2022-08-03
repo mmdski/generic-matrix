@@ -88,6 +88,48 @@ Solve(const Matrix<T> &a,
   return x;
 }
 
+template <typename T>
+void
+GaussJordan(Matrix<T> &a) {
+
+  T pivot_value;
+  T row_value;
+
+  for (size_t pivot_col = 1, pivot_row = 1;
+       pivot_col <= a.NCols() && pivot_row <= a.NRows();
+       pivot_col++) {
+
+    a.ZeroPivotExchange(pivot_row, pivot_col);
+
+    pivot_value = a(pivot_row, pivot_col);
+    if (pivot_value == 0)
+      continue;
+
+    a.RowMultiply(pivot_row, 1.0 / pivot_value);
+
+    for (size_t i = pivot_row + 1; i <= a.NRows(); i++) {
+
+      row_value = a(i, pivot_col);
+      if (row_value == 0)
+        continue; // row value in pivot column is already zero
+
+      a.AddRow(i, pivot_row, -row_value);
+    }
+
+    for (size_t i = 1; i < pivot_row; i++) {
+
+      row_value = a(i, pivot_col);
+
+      if (row_value == 0)
+        continue; // row value in pivot column is already zero
+
+      a.AddRow(i, pivot_row, -row_value);
+    }
+
+    pivot_row++;
+  }
+}
+
 } // namespace gauss
 
 } // namespace gmat

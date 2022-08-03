@@ -61,41 +61,37 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Asan" AND ASAN_AVAIL)
   endif()
 endif()
 
-macro(add_gmat_test basename fail)
-  add_executable(${basename} ${basename}.cpp)
-  target_link_libraries(${basename} gmat GTest::gtest GTest::gtest_main)
-  gtest_add_tests(TARGET ${basename}
-    TEST_LIST ${basename}-tests)
+# tests for C code w/ static libgmat
+# macro(add_gmat_test basename fail)
+# add_executable(${basename} ${basename}.cpp)
+# target_link_libraries(${basename} gmat GTest::gtest GTest::gtest_main)
+# gtest_add_tests(TARGET ${basename}
+# TEST_LIST ${basename}-tests)
 
-  if(USING_ASAN)
-    set_tests_properties(${${basename}-tests}
-      PROPERTIES
-      ENVIRONMENT ${ASAN_ENV}
-      WILL_FAIL ${fail})
-  else()
-    set_tests_properties(${${basename}-tests}
-      PROPERTIES
-      WILL_FAIL ${fail})
-  endif()
-endmacro()
+# if(USING_ASAN)
+# set_tests_properties(${${basename}-tests}
+# PROPERTIES
+# ENVIRONMENT ${ASAN_ENV}
+# WILL_FAIL ${fail})
+# else()
+# set_tests_properties(${${basename}-tests}
+# PROPERTIES
+# WILL_FAIL ${fail})
+# endif()
+# endmacro()
 
-macro(add_gmat_test_cxx basename fail)
+# add_gmat_test(test_double FALSE)
+
+# tests for CXX code
+macro(add_gmat_test basename)
   add_executable(${basename} ${basename}.cc)
   target_link_libraries(${basename} GTest::gtest GTest::gtest_main)
   gtest_add_tests(TARGET ${basename}
     TEST_LIST ${basename}-tests)
 
   if(USING_ASAN)
-    set_tests_properties(${${basename}-tests}
-      PROPERTIES
-      ENVIRONMENT ${ASAN_ENV}
-      WILL_FAIL ${fail})
-  else()
-    set_tests_properties(${${basename}-tests}
-      PROPERTIES
-      WILL_FAIL ${fail})
+    set_tests_properties(${${basename}-tests} PROPERTIES ENVIRONMENT ${ASAN_ENV})
   endif()
 endmacro()
 
-add_gmat_test(test_double FALSE)
-add_gmat_test_cxx(matrix_double_test FALSE)
+add_gmat_test(matrix_double_test)

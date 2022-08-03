@@ -25,8 +25,7 @@ endif()
 
 include_directories(include)
 
-add_subdirectory(src)
-
+# add_subdirectory(src)
 macro(add_gmat_exe basename)
   add_executable(${basename} ${basename}.c)
 

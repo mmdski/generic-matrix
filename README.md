@@ -1,2 +1,3 @@
 # generic-matrix
-Generic type matrix in C
+
+Generic type matrix in C++

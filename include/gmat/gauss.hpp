@@ -105,7 +105,7 @@ GaussJordan(Matrix<T> &a) {
     if (pivot_value == 0)
       continue;
 
-    a.RowMultiply(pivot_row, 1.0 / pivot_value);
+    a.MultiplyRow(pivot_row, 1.0 / pivot_value);
 
     for (size_t i = pivot_row + 1; i <= a.NRows(); i++) {
 

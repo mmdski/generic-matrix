@@ -22,6 +22,7 @@ public:
   Matrix(size_t m, size_t n) : n_rows_{m}, n_cols_{n}, elem_{new T[m * n]} {
     assert(m > 0 && n > 0);
   }
+  Matrix(size_t m, size_t n, std::initializer_list<double>);
   Matrix(size_t              m,
          size_t              n,
          std::vector<double> values);   // construct from vector
@@ -43,8 +44,6 @@ public:
 
   Matrix &operator=(const Matrix &other);  // copy assignment
   Matrix &operator=(Matrix &&other);       // move assignment
-  bool    operator==(const Matrix &other); // equality
-  bool    operator!=(const Matrix &other); // inequality
   Matrix  operator+(const T c);            // scalar addition
   Matrix &operator+=(const T c);           // scalar addition
   Matrix  operator*(const T c);            // scalar multiplication
@@ -71,7 +70,7 @@ public:
 
   void AddRow(size_t row1, size_t row2, T c);  // row1 = row1 + c * row2
   void ExchangeRows(size_t row1, size_t row2); // swap rows 1 and 2
-  void RowMultiply(size_t row, T c);           // multiply row i by c
+  void MultiplyRow(size_t row, T c);           // multiply row by c
 
   // no pivot row exchange (used for instruction)
   void
@@ -87,16 +86,20 @@ public:
   void MaxPivotExchange(size_t pivot_row, size_t pivot_col);
 };
 
-// construct from an array
+// construct from initializer list
+template <typename T>
+Matrix<T>::Matrix(size_t m, size_t n, std::initializer_list<double> lst)
+    : n_rows_{m}, n_cols_{n}, elem_{new T[lst.size()]} {
+  assert(m * n == lst.size());
+  std::copy(lst.begin(), lst.end(), elem_);
+}
+
+// construct from a vector
 template <typename T>
 Matrix<T>::Matrix(size_t m, size_t n, std::vector<double> values)
-    : n_rows_{m}, n_cols_{n} {
-  size_t size = n_rows_ * n_cols_;
-  assert(size > 0);
-  assert(values.size() == size);
-  elem_ = new T[size];
-  for (size_t i = 0; i < size; ++i)
-    elem_[i] = values[i];
+    : n_rows_{m}, n_cols_{n}, elem_{new T[values.size()]} {
+  assert(m * n == values.size());
+  std::copy(values.begin(), values.end(), elem_);
 }
 
 // copy constructor implementation
@@ -136,28 +139,6 @@ operator<<(std::ostream &os, const Matrix<T> &m) {
 // equality
 template <typename T>
 bool
-Matrix<T>::operator==(const Matrix &other) {
-
-  // self check
-  if (this == &other)
-    return true;
-
-  // size check
-  if ((n_rows_ != other.n_rows_) || (n_cols_ != other.n_cols_))
-    return false;
-
-  // element equality check
-  for (size_t i = 0; i < n_rows_ * n_cols_; i++) {
-    if (elem_[i] != other.elem_[i])
-      return false;
-  }
-
-  return true;
-}
-
-// equality
-template <typename T>
-bool
 operator==(const Matrix<T> &a, const Matrix<T> &b) {
 
   // self check
@@ -181,16 +162,10 @@ operator==(const Matrix<T> &a, const Matrix<T> &b) {
 // inequality
 template <typename T>
 bool
-Matrix<T>::operator!=(const Matrix &other) {
-  return !((*this) == other);
-}
-
-template <typename T>
-bool
 operator!=(const Matrix<T> &a, const Matrix<T> &b) {
+
   return !(a == b);
 }
-
 // copy assignment implementation
 template <typename T>
 Matrix<T> &
@@ -353,8 +328,9 @@ Matrix<T>::ExchangeRows(size_t row1, size_t row2) {
 
 template <typename T>
 void
-Matrix<T>::RowMultiply(size_t row, T c) {
+Matrix<T>::MultiplyRow(size_t row, T c) {
   assert(1 <= row && row <= n_rows_);
+  assert(c != 0);
   for (size_t j = 1; j <= n_cols_; ++j)
     elem_[MAT_INDEX(n_cols_, row, j)] *= c;
 }

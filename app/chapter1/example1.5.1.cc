@@ -13,13 +13,8 @@ using namespace gmat;
 int
 main(void) {
 
-  size_t              n_rows   = 2;
-  size_t              n_cols   = 2;
-  std::vector<double> a_values = {-pow(10, -4), 1, 1, 1};
-  std::vector<double> b_values = {1, 2};
-
-  Matrix<FlP> a(n_rows, n_cols, a_values);
-  Matrix<FlP> b(n_rows, 1, b_values);
+  Matrix<FlP> a(2, 2, {-pow(10, -4), 1, 1, 1});
+  Matrix<FlP> b(2, 1, {1, 2});
 
   cout << "Ax=b" << endl;
 

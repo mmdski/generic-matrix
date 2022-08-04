@@ -1,7 +1,7 @@
 #ifndef GMAT_GAUSS_HPP_
 #define GMAT_GAUSS_HPP_
 
-#include <gmat/matrix.h>
+#include <gmat/matrix.hpp>
 
 namespace gmat {
 namespace gauss {

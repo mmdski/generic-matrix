@@ -3,9 +3,9 @@
 #include <math.h>
 #include <vector>
 
-#include <gmat/flp.h>
-#include <gmat/gauss.h>
-#include <gmat/matrix.h>
+#include <gmat/flp.hpp>
+#include <gmat/gauss.hpp>
+#include <gmat/matrix.hpp>
 
 using namespace std;
 using namespace gmat;

@@ -72,6 +72,7 @@ public:
   void AddRow(size_t row1, size_t row2, T c);  // row1 = row1 + c * row2
   void ExchangeRows(size_t row1, size_t row2); // swap rows 1 and 2
   void MultiplyRow(size_t row, T c);           // multiply row by c
+  void ScaleRows(); // scale rows by maximum value in row
 
   // no pivot row exchange (used for instruction)
   void
@@ -337,6 +338,22 @@ Matrix<T>::MultiplyRow(size_t row, T c) {
   assert(c != 0);
   for (size_t j = 1; j <= n_cols_; ++j)
     elem_[MAT_INDEX(n_cols_, row, j)] *= c;
+}
+
+template <typename T>
+void
+Matrix<T>::ScaleRows() {
+  T max_element;
+  T element;
+  for (size_t i = 1; i <= n_rows_; ++i) {
+    max_element = elem_[MAT_INDEX(n_cols_, i, 1)];
+    for (size_t j = 2; j <= n_cols_; ++j) {
+      element = elem_[MAT_INDEX(n_cols_, i, j)];
+      if (element > max_element)
+        max_element = element;
+    }
+    MultiplyRow(i, 1.0 / max_element);
+  }
 }
 
 // zero pivot row exchange

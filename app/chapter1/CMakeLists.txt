@@ -1,3 +1,5 @@
+add_executable(submatrix submatrix.cc)
+
 add_executable(example1.5.1 example1.5.1.cc)
 add_executable(example1.6.1 example1.6.1.cc)
 

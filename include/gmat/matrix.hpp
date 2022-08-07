@@ -1,6 +1,7 @@
 #ifndef GMAT_MATRIX_HPP_
 #define GMAT_MATRIX_HPP_
 
+#include <algorithm>
 #include <assert.h>
 #include <cmath>
 #include <iomanip>
@@ -84,6 +85,9 @@ public:
 
   // exchange row for maximum pivot
   void MaxPivotExchange(size_t pivot_row, size_t pivot_col);
+
+  Matrix<T> SubMatrix(std::vector<size_t> rows,
+                      std::vector<size_t> columns) const;
 };
 
 // construct from initializer list
@@ -374,6 +378,30 @@ Matrix<T>::MaxPivotExchange(size_t pivot_row, size_t pivot_col) {
     (*this).ExchangeRows(max_row, pivot_row);
 }
 
+// get a sub-matrix defined by rows and columns
+template <typename T>
+Matrix<T>
+Matrix<T>::SubMatrix(std::vector<size_t> rows,
+                     std::vector<size_t> columns) const {
+
+  assert(rows.size() > 0 && columns.size() > 0);
+
+  // make sure rows and columns are sorted
+  std::sort(rows.begin(), rows.end());
+  std::sort(columns.begin(), columns.end());
+
+  size_t         m = rows.size();
+  size_t         n = columns.size();
+  std::vector<T> elements;
+  for (size_t i : rows) {
+    for (size_t j : columns) {
+      elements.push_back(get(i, j));
+    }
+  }
+
+  return Matrix<T>(m, n, elements);
+}
+
 // create identity matrix
 template <typename T>
 Matrix<T>
@@ -407,7 +435,7 @@ Ones(size_t m, size_t n) {
   return mat;
 }
 
-// create a matrix of ones
+// create a matrix of zeros
 template <typename T>
 Matrix<T>
 Zeros(size_t m, size_t n) {

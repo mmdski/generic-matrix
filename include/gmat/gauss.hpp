@@ -1,7 +1,11 @@
 #ifndef GMAT_GAUSS_HPP_
 #define GMAT_GAUSS_HPP_
 
+#include <cmath>
+
 #include <gmat/matrix.hpp>
+
+#define EPSILON 1e-10
 
 namespace gmat {
 namespace gauss {
@@ -86,6 +90,24 @@ Solve(const Matrix<T> &a,
   Reduce(augmented, pivot_exchange);
   Matrix<T> x = BackSubstitute(augmented);
   return x;
+}
+
+// returns the basic column numbers of reduced matrix e
+template <typename T>
+std::vector<size_t>
+BasicColumnNumbers(Matrix<T> e) {
+  std::vector<size_t> basic_cols;
+  for (size_t i = 1; i <= e.NRows(); ++i) {
+    for (size_t j = 1; j <= e.NCols(); ++j) {
+      if (abs(e.get(i, j)) < EPSILON)
+        continue;
+      else {
+        basic_cols.push_back(j);
+        break;
+      }
+    }
+  }
+  return basic_cols;
 }
 
 template <typename T>

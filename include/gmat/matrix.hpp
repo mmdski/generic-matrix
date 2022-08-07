@@ -87,8 +87,9 @@ public:
   // exchange row for maximum pivot
   void MaxPivotExchange(size_t pivot_row, size_t pivot_col);
 
-  Matrix<T> SubMatrix(std::vector<size_t> rows,
-                      std::vector<size_t> columns) const;
+  std::vector<Matrix<T>> ExtractColumns(std::vector<size_t> columns) const;
+  Matrix<T>              SubMatrix(std::vector<size_t> rows,
+                                   std::vector<size_t> columns) const;
 };
 
 // construct from initializer list
@@ -395,6 +396,21 @@ Matrix<T>::MaxPivotExchange(size_t pivot_row, size_t pivot_col) {
     (*this).ExchangeRows(max_row, pivot_row);
 }
 
+template <typename T>
+std::vector<Matrix<T>>
+Matrix<T>::ExtractColumns(std::vector<size_t> columns) const {
+  assert(columns.size() > 0);
+  std::vector<Matrix<T>> extracted_columns;
+  for (size_t j : columns) {
+    Matrix<T> a(n_rows_, 1);
+    for (size_t i = 1; i <= n_rows_; ++i) {
+      a(i, 1) = get(i, j);
+    }
+    extracted_columns.push_back(a);
+  }
+  return extracted_columns;
+}
+
 // get a sub-matrix defined by rows and columns
 template <typename T>
 Matrix<T>
@@ -484,6 +500,34 @@ ColumnConcatenate(const Matrix<T> a, const Matrix<T> b) {
   }
 
   return c;
+}
+
+template <typename T>
+Matrix<T>
+ColumnConcatenate(const std::vector<Matrix<T>> matrices) {
+  assert(matrices.size() > 0);
+
+  size_t n_rows = matrices[0].NRows();
+  size_t n_cols = 0;
+
+  // get the size of the resulting matrix
+  for (Matrix<T> matrix : matrices) {
+    assert(n_rows == matrix.NRows());
+    n_cols += matrix.NCols();
+  }
+
+  Matrix<T> a(n_rows, n_cols);
+  size_t    j_a;
+  for (size_t i = 1; i <= n_rows; ++i) {
+    j_a = 1;
+    for (Matrix<T> matrix : matrices) {
+      for (size_t j = 1; j <= matrix.NCols(); ++j) {
+        a(i, j_a++) = matrix(i, j);
+      }
+    }
+  }
+
+  return a;
 }
 
 } // namespace gmat

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include <gmat/gauss.hpp>
 #include <gmat/matrix.hpp>
@@ -22,6 +23,13 @@ main(void) {
   gauss::Reduce(a, &Matrix<double>::ZeroPivotExchange);
 
   cout << "A (after elimination)=" << endl << a;
+
+  vector<size_t> basic_col_nums = gauss::BasicColumnNumbers(a);
+
+  cout << "The basic column numbers of A are " << basic_col_nums[0];
+  for (size_t j = 1; j < basic_col_nums.size(); ++j)
+    cout << ", " << basic_col_nums[j];
+  cout << endl;
 
   return 0;
 }

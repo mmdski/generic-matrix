@@ -112,7 +112,9 @@ BasicColumnNumbers(Matrix<T> e) {
 
 template <typename T>
 void
-GaussJordan(Matrix<T> &a) {
+GaussJordan(Matrix<T> &a,
+            void (Matrix<T>::*pivot_exchange)(size_t, size_t) =
+                &Matrix<T>::MaxPivotExchange) {
 
   T pivot_value;
   T row_value;
@@ -121,7 +123,7 @@ GaussJordan(Matrix<T> &a) {
        pivot_col <= a.NCols() && pivot_row <= a.NRows();
        pivot_col++) {
 
-    a.ZeroPivotExchange(pivot_row, pivot_col);
+    (a.*pivot_exchange)(pivot_row, pivot_col);
 
     pivot_value = a(pivot_row, pivot_col);
     if (pivot_value == 0)

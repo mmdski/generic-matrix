@@ -382,10 +382,10 @@ Matrix<T>::MaxPivotExchange(size_t pivot_row, size_t pivot_col) {
   assert(1 <= pivot_col && pivot_col <= n_cols_);
 
   size_t max_row       = pivot_row;
-  T      abs_max_value = fabs(elem_[MAT_INDEX(n_cols_, pivot_row, pivot_col)]);
+  T      abs_max_value = abs(elem_[MAT_INDEX(n_cols_, pivot_row, pivot_col)]);
   T      abs_value;
   for (size_t i = pivot_row + 1; i <= n_rows_; ++i) {
-    abs_value = fabs(elem_[MAT_INDEX(n_cols_, i, pivot_col)]);
+    abs_value = abs(elem_[MAT_INDEX(n_cols_, i, pivot_col)]);
     if (abs_value > abs_max_value) {
       max_row       = i;
       abs_max_value = abs_value;

@@ -35,7 +35,7 @@ public:
   FlP  operator-(const FlP &other);  // subtract
   FlP &operator-=(const FlP &other); // subtract
   FlP  operator*(const FlP &other);  // multiply
-  FlP  operator*=(const FlP &other); // multiply
+  FlP &operator*=(const FlP &other); // multiply
   FlP  operator/(const FlP &other);  // divide
 
   friend std::ostream &
@@ -150,10 +150,10 @@ FlP::operator*(const FlP &other) {
   return prod;
 }
 
-FlP
+FlP &
 FlP::operator*=(const FlP &other) {
-  FlP prod(fl(value * other.value));
-  return prod;
+  value = fl(value * other.value);
+  return *this;
 }
 
 FlP
@@ -163,7 +163,7 @@ FlP::operator/(const FlP &other) {
 }
 
 FlP
-operator/(const double a, const FlP b) {
+operator/(double a, const FlP b) {
   return FlP(FlP::fl(a / b.value));
 }
 

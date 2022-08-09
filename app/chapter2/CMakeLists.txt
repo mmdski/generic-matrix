@@ -10,3 +10,4 @@ add_executable(problem2.1.4 problem2.1.4.cc)
 
 add_executable(problem2.2.1a problem2.2.1a.cc)
 add_executable(problem2.2.1b problem2.2.1b.cc)
+add_executable(problem2.2.4 problem2.2.4.cc)

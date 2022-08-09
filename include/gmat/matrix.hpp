@@ -134,8 +134,11 @@ std::ostream &
 operator<<(std::ostream &os, const Matrix<T> &m) {
   for (size_t i = 1; i <= m.n_rows_; ++i) {
     for (size_t j = 1; j <= m.n_cols_; ++j) {
-      std::cout.precision(5);
-      os << std::setw(10) << m.elem_[MAT_INDEX(m.n_cols_, i, j)];
+      std::cout.precision(3);
+      T element = m.elem_[MAT_INDEX(m.n_cols_, i, j)];
+      if (abs(element) < 1e-10)
+        element = 0;
+      os << std::setw(10) << element;
     }
     os << std::endl;
   }
